@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Copy Pastor</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+        <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}"  />
+    </head>
+    <body>
+    <br>
+    <div class="container">
+        <h3>Copy Pastor</h3>
+        Detecting plagiarism made easy.
+    </div>
+    <br>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h2><a href="{{url_one}}">{{title_one}}</a></h2>
+            </div>
+            <div class="col">
+                <h2><a href="{{url_two}}">{{title_two}}</a></h2>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="cd">
+                    {% for item in body_one -%}
+                        {% if item == "" %}
+                        <span class="sp"><br/></span>
+                        {% elif item in body_two %}
+                        <span class="spr">{{item}}</span>
+                        {% else %}
+                        <span class="sp">{{item}}</span>
+                        {% endif %}
+                    {%- endfor %}
+                </div>
+            </div>
+            <div class="col">
+                <div class="cd">
+                    {% for item in body_two -%}
+                        {% if item == "" %}
+                        <span class="sp"><br/></span>
+                        {% elif item in body_one %}
+                        <span class="spr">{{item}}</span>
+                        {% else %}
+                        <span class="sp">{{item}}</span>
+                        {% endif %}
+                    {%- endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <hr/>
+    <div class="container">
+        <div class="footer">
+            <sub class="center-block">Made by <a href="https://sobotics.org/">Sobotics</a>. Content provided by <a href="https://stackexchange.com/">Stack Exchange API</a> through the cc by-sa 3.0 license </sub>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
+    </body>
+</html>
