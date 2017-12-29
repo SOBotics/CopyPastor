@@ -5,3 +5,4 @@
 # Application
 /storage/
 __pycache__
+/venv/
