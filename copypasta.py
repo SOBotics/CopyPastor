@@ -2,6 +2,7 @@ import json
 from html import unescape
 
 from flask import Flask, render_template, request, jsonify
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -15,6 +16,7 @@ def store_post():
     with open("storage/data.txt", "a") as fp:
         data = {"url_one": request.form.get("url_one"), "url_two": request.form.get("url_two"),
                 "title_one": request.form.get("title_one"), "title_two": request.form.get("title_two"),
+                "date_one": request.form.get("date_one"), "date_two": request.form.get("date_two"),
                 "body_one": request.form.get("body_one"), "body_two": request.form.get("body_two")}
         json.dump(data,fp)
         fp.write("\n")
@@ -29,11 +31,13 @@ def get_post(post_id):
                 data = json.loads(data_string)
                 try:
                     return render_template('render.html', url_one=data["url_one"], url_two=data["url_two"],
-                                           title_one=data["title_one"], title_two=data["title_two"],
+                                           title_one=unescape(data["title_one"]), title_two=unescape(data["title_two"]),
+                                           date_one=datetime.fromtimestamp(float(data["date_one"])),
+                                           date_two=datetime.fromtimestamp(float(data["date_two"])),
                                            body_one=get_body(data["body_one"]), body_two=get_body(data["body_two"]))
                 except KeyError as e:
                     print(e)
-                    return render_template('error.html', message="Sorry, the post has been deleted...")
+                    return render_template('error.html', message="Sorry, the post has been deleted ...")
         return render_template('error.html', message="Sorry, that page doesn't exist ...")
 
 
