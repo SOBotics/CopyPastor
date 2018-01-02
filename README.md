@@ -29,11 +29,11 @@ Success Response
 
      {"post_id":<postID>,"status":"success"}
 
-Failure Response
+Failure Response (Error Code 400 Bad Request)
 
      {"message":<error reason>,"status":"failure"}
 
 
 ## GET `/posts/<post_id>`
 
-A web view of the two posts next to each other.
+A web view of the two posts next to each other. Error code 410 for deleted reports and 404 for non available reports.
