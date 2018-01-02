@@ -6,6 +6,13 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('error.html', message="Sorry, that page doesn't exist ..."), 404
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    return render_template('error.html', message="Umph! Something bad happened, we'll look into it. Thanks ..."), 500
 
 @app.route("/posts/create", methods=['POST'])
 def store_post():
