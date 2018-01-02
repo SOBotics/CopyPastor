@@ -14,11 +14,18 @@ def store_post():
         for _ in fp:
             post_id += 1
     with open("storage/data.txt", "a") as fp:
-        data = {"url_one": request.form.get("url_one"), "url_two": request.form.get("url_two"),
-                "title_one": request.form.get("title_one"), "title_two": request.form.get("title_two"),
-                "date_one": request.form.get("date_one"), "date_two": request.form.get("date_two"),
-                "body_one": request.form.get("body_one"), "body_two": request.form.get("body_two")}
-        json.dump(data,fp)
+        try:
+            date_one = request.form["date_one"]
+            date_two = request.form["date_two"]
+            if date_one < date_two:
+                return jsonify({"status": "failure", "message": "Error - Plagiarized post created earlier"}), 400
+            data = {"url_one": request.form["url_one"], "url_two": request.form["url_two"],
+                    "title_one": request.form["title_one"], "title_two": request.form["title_two"],
+                    "date_one": date_one, "date_two": date_two,
+                    "body_one": request.form["body_one"], "body_two": request.form["body_two"]}
+        except KeyError as e:
+            return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
+        json.dump(data, fp)
         fp.write("\n")
     return jsonify({"status": "success", "post_id": post_id})
 
@@ -36,9 +43,8 @@ def get_post(post_id):
                                            date_two=datetime.fromtimestamp(float(data["date_two"])),
                                            body_one=get_body(data["body_one"]), body_two=get_body(data["body_two"]))
                 except KeyError as e:
-                    print(e)
-                    return render_template('error.html', message="Sorry, the post has been deleted ...")
-        return render_template('error.html', message="Sorry, that page doesn't exist ...")
+                    return render_template('error.html', message="Sorry, the post has been deleted ..."), 410
+        return render_template('error.html', message="Sorry, that page doesn't exist ..."), 404
 
 
 def get_body(body):
