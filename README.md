@@ -37,3 +37,5 @@ Failure Response (Error Code 400 Bad Request)
 ## GET `/posts/<post_id>`
 
 A web view of the two posts next to each other. Error code 410 for deleted reports and 404 for non available reports.
+
+![ScreenGrab](https://raw.githubusercontent.com/SOBotics/CopyPastor/master/static/sample.png)
