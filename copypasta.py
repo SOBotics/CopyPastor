@@ -6,13 +6,18 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+
 @app.errorhandler(404)
 def page_not_found(error):
+    print(error)
     return render_template('error.html', message="Sorry, that page doesn't exist ..."), 404
+
 
 @app.errorhandler(500)
 def internal_server_error(error):
+    print(error)
     return render_template('error.html', message="Umph! Something bad happened, we'll look into it. Thanks ..."), 500
+
 
 @app.route("/posts/create", methods=['POST'])
 def store_post():
@@ -33,19 +38,18 @@ def store_post():
 
 @app.route("/posts/<int:post_id>", methods=['GET'])
 def get_post(post_id):
-    with open("storage/data.txt", "r") as fp:
-        for ind, data_string in enumerate(fp, start=1):
-            if ind == post_id:
-                data = json.loads(data_string)
-                try:
-                    return render_template('render.html', url_one=data["url_one"], url_two=data["url_two"],
-                                           title_one=unescape(data["title_one"]), title_two=unescape(data["title_two"]),
-                                           date_one=datetime.fromtimestamp(float(data["date_one"])),
-                                           date_two=datetime.fromtimestamp(float(data["date_two"])),
-                                           body_one=get_body(data["body_one"]), body_two=get_body(data["body_two"]))
-                except KeyError as e:
-                    return render_template('error.html', message="Sorry, the post has been deleted ..."), 410
+    data = retrieve_data(post_id)
+    if data is None:
         return render_template('error.html', message="Sorry, that page doesn't exist ..."), 404
+    try:
+        return render_template('render.html', url_one=data["url_one"], url_two=data["url_two"],
+                               title_one=unescape(data["title_one"]), title_two=unescape(data["title_two"]),
+                               date_one=datetime.fromtimestamp(float(data["date_one"])),
+                               date_two=datetime.fromtimestamp(float(data["date_two"])),
+                               body_one=get_body(data["body_one"]), body_two=get_body(data["body_two"]))
+    except KeyError as e:
+        print(e)
+        return render_template('error.html', message="Sorry, the post has been deleted ..."), 410
 
 
 def get_body(body):
@@ -61,3 +65,12 @@ def store_data(data):
         json.dump(data, fp)
         fp.write("\n")
     return post_id
+
+
+def retrieve_data(post_id):
+    with open("storage/data.txt", "r") as fp:
+        for ind, data_string in enumerate(fp, start=1):
+            if ind == post_id:
+                data = json.loads(data_string)
+                return data
+    return None
