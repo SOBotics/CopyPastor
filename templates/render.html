@@ -1,18 +1,5 @@
-<!doctype html>
-<html>
-    <head>
-        <title>Copy Pastor</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css">
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-        <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}"  />
-    </head>
-    <body>
-    <br>
-    <div class="container">
-        <h3>Copy Pastor</h3>
-        Detecting plagiarism made easy.
-    </div>
-    <br>
+{% extends "base.html" %}
+{% block content %}
 
     <div class="container">
         <div class="row">
@@ -57,18 +44,7 @@
             </div>
         </div>
     </div>
-    <br><br>
-    <hr/>
-    <div class="container">
-        <div class="footer">
-            <sub class="center-block"> Made by <a href="https://sobotics.org/">Sobotics</a>.
-                Source code on <a href="https://github.com/SOBotics/CopyPastor">Github</a>.
-                Content provided by <a href="https://stackexchange.com/">Stack Exchange API</a>
-                through the cc by-sa 3.0 license
-            </sub>
-        </div>
-    </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
-    </body>
-</html>
+<div class="container">
+    <h1>{{message}}</h1>
+</div>
+{% endblock %}
