@@ -16,24 +16,18 @@ def internal_server_error(error):
 
 @app.route("/posts/create", methods=['POST'])
 def store_post():
-    post_id = 1
-    with open("storage/data.txt", "r") as fp:
-        for _ in fp:
-            post_id += 1
-    with open("storage/data.txt", "a") as fp:
-        try:
-            date_one = request.form["date_one"]
-            date_two = request.form["date_two"]
-            if date_one < date_two:
-                return jsonify({"status": "failure", "message": "Error - Plagiarized post created earlier"}), 400
-            data = {"url_one": request.form["url_one"], "url_two": request.form["url_two"],
-                    "title_one": request.form["title_one"], "title_two": request.form["title_two"],
-                    "date_one": date_one, "date_two": date_two,
-                    "body_one": request.form["body_one"], "body_two": request.form["body_two"]}
-        except KeyError as e:
-            return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
-        json.dump(data, fp)
-        fp.write("\n")
+    try:
+        date_one = request.form["date_one"]
+        date_two = request.form["date_two"]
+        if date_one < date_two:
+            return jsonify({"status": "failure", "message": "Error - Plagiarized post created earlier"}), 400
+        data = {"url_one": request.form["url_one"], "url_two": request.form["url_two"],
+                "title_one": request.form["title_one"], "title_two": request.form["title_two"],
+                "date_one": date_one, "date_two": date_two,
+                "body_one": request.form["body_one"], "body_two": request.form["body_two"]}
+        post_id = store_data(data)
+    except KeyError as e:
+        return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
     return jsonify({"status": "success", "post_id": post_id})
 
 
@@ -56,3 +50,14 @@ def get_post(post_id):
 
 def get_body(body):
     return unescape(body).split("\r\n")
+
+
+def store_data(data):
+    post_id = 1
+    with open("storage/data.txt", "r") as fp:
+        for _ in fp:
+            post_id += 1
+    with open("storage/data.txt", "a") as fp:
+        json.dump(data, fp)
+        fp.write("\n")
+    return post_id
