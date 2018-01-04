@@ -1,10 +1,11 @@
-import json
+import sqlite3
 from html import unescape
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, g
 from datetime import datetime
 
 app = Flask(__name__)
+DATABASE = 'copypastorDB.db'
 
 
 @app.errorhandler(404)
@@ -26,10 +27,8 @@ def store_post():
         date_two = request.form["date_two"]
         if date_one < date_two:
             return jsonify({"status": "failure", "message": "Error - Plagiarized post created earlier"}), 400
-        data = {"url_one": request.form["url_one"], "url_two": request.form["url_two"],
-                "title_one": request.form["title_one"], "title_two": request.form["title_two"],
-                "date_one": date_one, "date_two": date_two,
-                "body_one": request.form["body_one"], "body_two": request.form["body_two"]}
+        data = (request.form["url_one"], request.form["url_two"], request.form["title_one"],
+                request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"])
         post_id = store_data(data)
     except KeyError as e:
         return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
@@ -56,21 +55,58 @@ def get_body(body):
     return unescape(body).split("\r\n")
 
 
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+
+def init_db():
+    db = get_db()
+    cur = db.cursor()
+    with app.open_resource('schema.sql', mode='r') as f:
+        cur.executescript(f.read())
+    db.commit()
+
+
+@app.cli.command('initdb')
+def initdb_command():
+    init_db()
+    print('Initialized the database.')
+
+
+@app.teardown_appcontext
+def close_connection(exception):
+    if exception:
+        print(exception)
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
+
 def store_data(data):
-    post_id = 1
-    with open("storage/data.txt", "r") as fp:
-        for _ in fp:
-            post_id += 1
-    with open("storage/data.txt", "a") as fp:
-        json.dump(data, fp)
-        fp.write("\n")
-    return post_id
+    with app.app_context():
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("INSERT INTO posts "
+                    "(url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two) "
+                    "VALUES (?,?,?,?,?,?,?,?);", data)
+        cur.execute("SELECT last_insert_rowid();")
+        post_id = cur.fetchone()[0]
+        db.commit()
+        return post_id
 
 
 def retrieve_data(post_id):
-    with open("storage/data.txt", "r") as fp:
-        for ind, data_string in enumerate(fp, start=1):
-            if ind == post_id:
-                data = json.loads(data_string)
-                return data
-    return None
+    with app.app_context():
+        cur = get_db().cursor()
+        cur.execute("SELECT url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two FROM posts "
+                    "WHERE post_id=?;", (post_id,))
+        row = cur.fetchone()
+        if row is None:
+            return None
+        data = {i: j for i, j in
+                zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one', 'body_two'),
+                    row)}
+        return data
