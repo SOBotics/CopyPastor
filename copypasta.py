@@ -2,10 +2,11 @@ import json
 import sqlite3
 from html import unescape
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, g
 from datetime import datetime
 
 app = Flask(__name__)
+DATABASE = 'copypastorDB.db'
 
 
 @app.errorhandler(404)
@@ -55,29 +56,40 @@ def get_body(body):
     return unescape(body).split("\r\n")
 
 
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
+
 def store_data(data):
-    con = sqlite3.connect('copypastorDB.db')
-    cur = con.cursor()
-    cur.execute("INSERT INTO posts (url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two) "
-                "VALUES (?,?,?,?,?,?,?,?);", data)
-    cur.execute("SELECT last_insert_rowid();")
-    post_id = cur.fetchone()[0]
-    con.commit()
-    con.close()
-    return post_id
+    with app.app_context():
+        cur = get_db().cursor()
+        cur.execute("INSERT INTO posts "
+                    "(url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two) "
+                    "VALUES (?,?,?,?,?,?,?,?);", data)
+        cur.execute("SELECT last_insert_rowid();")
+        post_id = cur.fetchone()[0]
+        return post_id
 
 
 def retrieve_data(post_id):
-    con = sqlite3.connect('copypastorDB.db')
-    cur = con.cursor()
-    cur.execute("SELECT url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two FROM posts "
-                "WHERE post_id=?;", (post_id,))
-    row = cur.fetchone()
-    if row is None:
-        return None
-    data = {i: j for i, j in
-            zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one', 'body_two'), row)}
-    con.commit()
-    con.close()
-    return data
+    with app.app_context():
+        cur = get_db().cursor()
+        cur.execute("SELECT url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two FROM posts "
+                    "WHERE post_id=?;", (post_id,))
+        row = cur.fetchone()
+        if row is None:
+            return None
+        data = {i: j for i, j in
+                zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one', 'body_two'), row)}
+        return data
 
