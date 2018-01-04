@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-mkdir storage
-touch storage/data.txt
+export FLASK_APP=copypasta.py
+python3 -m flask initdb
