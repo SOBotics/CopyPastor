@@ -27,8 +27,8 @@ def store_post():
         date_two = request.form["date_two"]
         if date_one < date_two:
             return jsonify({"status": "failure", "message": "Error - Plagiarized post created earlier"}), 400
-        data = (request.form["url_one"],  request.form["url_two"], request.form["title_one"],
-                request.form["title_two"], date_one,  date_two, request.form["body_one"], request.form["body_two"])
+        data = (request.form["url_one"], request.form["url_two"], request.form["title_one"],
+                request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"])
         post_id = store_data(data)
     except KeyError as e:
         return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
@@ -68,9 +68,16 @@ def store_data(data):
 
 
 def retrieve_data(post_id):
-    with open("storage/data.txt", "r") as fp:
-        for ind, data_string in enumerate(fp, start=1):
-            if ind == post_id:
-                data = json.loads(data_string)
-                return data
-    return None
+    con = sqlite3.connect('copypastorDB.db')
+    cur = con.cursor()
+    cur.execute("SELECT url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two FROM posts "
+                "WHERE post_id=?;", (post_id,))
+    row = cur.fetchone()
+    if row is None:
+        return None
+    data = {i: j for i, j in
+            zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one', 'body_two'), row)}
+    con.commit()
+    con.close()
+    return data
+
