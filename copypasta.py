@@ -35,6 +35,18 @@ def store_post():
     return jsonify({"status": "success", "post_id": post_id})
 
 
+@app.route("/feedback/create", methods=['POST'])
+def store_feedback():
+    try:
+        data = (request.form["post_id"], request.form["feedback_type"], request.form["user"], request.form["link"])
+        status = store_data(data)
+        if status:
+            return jsonify({"status": "failure", "message": status}), 400
+    except KeyError as e:
+        return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
+    return jsonify({"status": "success", "message": "feedback stored"})
+
+
 @app.route("/posts/<int:post_id>", methods=['GET'])
 def get_post(post_id):
     data = retrieve_data(post_id)
@@ -110,3 +122,4 @@ def retrieve_data(post_id):
                 zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one', 'body_two'),
                     row)}
         return data
+
