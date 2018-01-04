@@ -60,7 +60,8 @@ def get_post(post_id):
                                title_one=unescape(data["title_one"]), title_two=unescape(data["title_two"]),
                                date_one=datetime.fromtimestamp(float(data["date_one"])),
                                date_two=datetime.fromtimestamp(float(data["date_two"])),
-                               body_one=get_body(data["body_one"]), body_two=get_body(data["body_two"]))
+                               body_one=get_body(data["body_one"]), body_two=get_body(data["body_two"]),
+                               feedback=data["feedback"])
     except KeyError as e:
         print(e)
         return render_template('error.html', message="Sorry, the post has been deleted ..."), 410
@@ -151,7 +152,9 @@ def retrieve_data(post_id):
         row = cur.fetchone()
         if row is None:
             return None
+        cur.execute("SELECT feedback_type, username, link FROM feedback WHERE post_id=?;", (post_id,))
+        feedbacks = cur.fetchall()
         data = {i: j for i, j in
-                zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one', 'body_two'),
-                    row)}
+                zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one',
+                     'body_two', 'feedback'), list(row)+[feedbacks])}
         return data
