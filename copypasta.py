@@ -130,10 +130,15 @@ def save_feedback(data):
                 ret_msg = "user feedback updated from {} to {}".format(old_db[1], data[1])
                 feedback_id = old_db[0]
         else:
-            cur.execute("INSERT INTO feedback (post_id, feedback_type, username, link) VALUES (?,?,?,?);", data)
-            cur.execute("SELECT last_insert_rowid();")
-            feedback_id = cur.fetchone()[0]
-            ret_msg = "user feedback registered successfully"
+            try:
+                cur.execute("PRAGMA foreign_keys = ON;")
+                cur.execute("INSERT INTO feedback (post_id, feedback_type, username, link) VALUES (?,?,?,?);", data)
+                cur.execute("SELECT last_insert_rowid();")
+                feedback_id = cur.fetchone()[0]
+                ret_msg = "user feedback registered successfully"
+            except sqlite3.IntegrityError as e:
+                print(e)
+                return "Post ID is incorrect. Post is either deleted or not yet created", None
         db.commit()
         return ret_msg, feedback_id
 
