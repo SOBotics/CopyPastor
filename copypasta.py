@@ -39,12 +39,14 @@ def store_post():
 def store_feedback():
     try:
         data = (request.form["post_id"], request.form["feedback_type"], request.form["username"], request.form["link"])
-        status = save_feedback(data)
-        if status:
-            return jsonify({"status": "failure", "message": status}), 400
+        ret_msg, feedback_id = save_feedback(data)
+        if feedback_id:
+            return jsonify({"status": "success", "message": ret_msg, "feedback_id": feedback_id})
+        else:
+            return jsonify({"status": "failure", "message": ret_msg}), 400
     except KeyError as e:
         return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
-    return jsonify({"status": "success", "message": "feedback stored"})
+
 
 
 @app.route("/posts/<int:post_id>", methods=['GET'])
@@ -118,13 +120,13 @@ def save_feedback(data):
                     (data[0], data[2]))
         old_db = cur.fetchone()
         if old_db:
-            if old_db[1]==data[1]:
+            if old_db[1] == data[1]:
                 ret_msg = "user feedback already registered"
                 feedback_id = old_db[0]
             else:
                 cur.execute("UPDATE feedback SET feedback_type=?, link=? WHERE post_id=? AND username=?;",
                             (data[1], data[3], data[0], data[2]))
-                ret_msg = "user feedback updated from {} to {}".format(old_db[1],data[1])
+                ret_msg = "user feedback updated from {} to {}".format(old_db[1], data[1])
                 feedback_id = old_db[0]
         else:
             cur.execute("INSERT INTO feedback (post_id, feedback_type, username, link) VALUES (?,?,?,?);", data)
@@ -147,4 +149,3 @@ def retrieve_data(post_id):
                 zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one', 'body_two'),
                     row)}
         return data
-
