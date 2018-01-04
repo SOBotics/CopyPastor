@@ -78,8 +78,9 @@ def initdb_command():
 
 @app.teardown_appcontext
 def close_connection(exception):
+    if exception:
+        print(exception)
     db = getattr(g, '_database', None)
-    print(exception)
     if db is not None:
         db.close()
 
