@@ -63,6 +63,20 @@ def get_db():
     return db
 
 
+def init_db():
+    db = get_db()
+    cur = db.cursor()
+    with app.open_resource('schema.sql', mode='r') as f:
+        cur.executescript(f.read())
+    db.commit()
+
+
+@app.cli.command('initdb')
+def initdb_command():
+    init_db()
+    print('Initialized the database.')
+
+
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
@@ -72,12 +86,14 @@ def close_connection(exception):
 
 def store_data(data):
     with app.app_context():
-        cur = get_db().cursor()
+        db = get_db()
+        cur = db.cursor()
         cur.execute("INSERT INTO posts "
                     "(url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two) "
                     "VALUES (?,?,?,?,?,?,?,?);", data)
         cur.execute("SELECT last_insert_rowid();")
         post_id = cur.fetchone()[0]
+        db.commit()
         return post_id
 
 
