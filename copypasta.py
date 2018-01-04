@@ -29,7 +29,7 @@ def store_post():
             return jsonify({"status": "failure", "message": "Error - Plagiarized post created earlier"}), 400
         data = (request.form["url_one"], request.form["url_two"], request.form["title_one"],
                 request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"])
-        post_id = store_data(data)
+        post_id = save_data(data)
     except KeyError as e:
         return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
     return jsonify({"status": "success", "post_id": post_id})
@@ -38,8 +38,8 @@ def store_post():
 @app.route("/feedback/create", methods=['POST'])
 def store_feedback():
     try:
-        data = (request.form["post_id"], request.form["feedback_type"], request.form["user"], request.form["link"])
-        status = store_data(data)
+        data = (request.form["post_id"], request.form["feedback_type"], request.form["username"], request.form["link"])
+        status = save_feedback(data)
         if status:
             return jsonify({"status": "failure", "message": status}), 400
     except KeyError as e:
@@ -97,7 +97,7 @@ def close_connection(exception):
         db.close()
 
 
-def store_data(data):
+def save_data(data):
     with app.app_context():
         db = get_db()
         cur = db.cursor()
@@ -108,6 +108,31 @@ def store_data(data):
         post_id = cur.fetchone()[0]
         db.commit()
         return post_id
+
+
+def save_feedback(data):
+    with app.app_context():
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("SELECT feedback_id, feedback_type FROM feedback WHERE post_id=? AND username=?;",
+                    (data[0], data[2]))
+        old_db = cur.fetchone()
+        if old_db:
+            if old_db[1]==data[1]:
+                ret_msg = "user feedback already registered"
+                feedback_id = old_db[0]
+            else:
+                cur.execute("UPDATE feedback SET feedback_type=?, link=? WHERE post_id=? AND username=?;",
+                            (data[1], data[3], data[0], data[2]))
+                ret_msg = "user feedback updated from {} to {}".format(old_db[1],data[1])
+                feedback_id = old_db[0]
+        else:
+            cur.execute("INSERT INTO feedback (post_id, feedback_type, username, link) VALUES (?,?,?,?);", data)
+            cur.execute("SELECT last_insert_rowid();")
+            feedback_id = cur.fetchone()[0]
+            ret_msg = "user feedback registered successfully"
+        db.commit()
+        return ret_msg, feedback_id
 
 
 def retrieve_data(post_id):
