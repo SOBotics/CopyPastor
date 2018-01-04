@@ -7,6 +7,17 @@ A very small Flask App to serve as a web dashboard for the [Guttenberg](https://
 
 The final plan is to demarcate the plagiarized portions clearly, and to compare it with the target post.
 
+
+# Setup
+
+To setup the app on your local machine:
+
+    git clone https://github.com/SOBotics/CopyPastor.git
+    cd CopyPastor
+    sh setup.sh
+    flask run        # or python3 -m flask run
+
+
 # API Call
 
 
