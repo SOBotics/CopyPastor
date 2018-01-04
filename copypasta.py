@@ -48,7 +48,6 @@ def store_feedback():
         return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
 
 
-
 @app.route("/posts/<int:post_id>", methods=['GET'])
 def get_post(post_id):
     data = retrieve_data(post_id)
