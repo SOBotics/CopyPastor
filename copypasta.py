@@ -39,11 +39,13 @@ def store_post():
 def store_feedback():
     try:
         data = (request.form["post_id"], request.form["feedback_type"], request.form["username"], request.form["link"])
+        if data[1] not in ("tp", "fp"):
+            return jsonify({"status": "failure", "message": "Error - Unknown feedback type"}), 400
         ret_msg, feedback_id = save_feedback(data)
         if feedback_id:
             return jsonify({"status": "success", "message": ret_msg, "feedback_id": feedback_id})
         else:
-            return jsonify({"status": "failure", "message": ret_msg}), 400
+            return jsonify({"status": "failure", "message": "Error - " + ret_msg}), 400
     except KeyError as e:
         return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
 
