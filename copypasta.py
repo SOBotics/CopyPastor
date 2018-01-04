@@ -1,4 +1,3 @@
-import json
 import sqlite3
 from html import unescape
 
@@ -80,6 +79,7 @@ def initdb_command():
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
+    print(exception)
     if db is not None:
         db.close()
 
@@ -106,6 +106,6 @@ def retrieve_data(post_id):
         if row is None:
             return None
         data = {i: j for i, j in
-                zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one', 'body_two'), row)}
+                zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one', 'body_two'),
+                    row)}
         return data
-
