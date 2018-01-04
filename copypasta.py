@@ -1,4 +1,5 @@
 import json
+import sqlite3
 from html import unescape
 
 from flask import Flask, render_template, request, jsonify
@@ -26,10 +27,8 @@ def store_post():
         date_two = request.form["date_two"]
         if date_one < date_two:
             return jsonify({"status": "failure", "message": "Error - Plagiarized post created earlier"}), 400
-        data = {"url_one": request.form["url_one"], "url_two": request.form["url_two"],
-                "title_one": request.form["title_one"], "title_two": request.form["title_two"],
-                "date_one": date_one, "date_two": date_two,
-                "body_one": request.form["body_one"], "body_two": request.form["body_two"]}
+        data = (request.form["url_one"],  request.form["url_two"], request.form["title_one"],
+                request.form["title_two"], date_one,  date_two, request.form["body_one"], request.form["body_two"])
         post_id = store_data(data)
     except KeyError as e:
         return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
@@ -57,13 +56,14 @@ def get_body(body):
 
 
 def store_data(data):
-    post_id = 1
-    with open("storage/data.txt", "r") as fp:
-        for _ in fp:
-            post_id += 1
-    with open("storage/data.txt", "a") as fp:
-        json.dump(data, fp)
-        fp.write("\n")
+    con = sqlite3.connect('copypastorDB.db')
+    cur = con.cursor()
+    cur.execute("INSERT INTO posts (url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two) "
+                "VALUES (?,?,?,?,?,?,?,?);", data)
+    cur.execute("SELECT last_insert_rowid();")
+    post_id = cur.fetchone()[0]
+    con.commit()
+    con.close()
     return post_id
 
 
