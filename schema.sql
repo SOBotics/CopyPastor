@@ -9,3 +9,12 @@ CREATE TABLE IF NOT EXISTS posts (
  date_one INTEGER NOT NULL,
  date_two INTEGER NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS feedback (
+ feedback_id INTEGER PRIMARY KEY,
+ post_id INTEGER,
+ feedback_type text NOT NULL,
+ username text NOT NULL,
+ link text NOT NULL,
+ FOREIGN KEY(post_id) REFERENCES posts(post_id)
+);

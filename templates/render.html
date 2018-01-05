@@ -5,7 +5,19 @@
         <div class="row">
             <div class="col">
                 <h2><a href="{{url_one}}">{{title_one}}</a></h2>
-                <p>Plagiarized - Posted on {{date_one.strftime('%Y-%m-%d')}}</p>
+                <p>Plagiarized - Posted on {{date_one.strftime('%Y-%m-%d')}}
+                    {% for type,name,link in feedback -%}
+                        {% if type == "tp" %}
+                            <span class="fb"><a href="{{link}}" title="{{name}}">
+                                <span class="fa fa-check" style="color:green"></span>
+                            </a></span>
+                        {% elif type == "fp" %}
+                            <span class="fb"><a href="{{link}}" title="{{name}}">
+                                <span class="fa fa-times" style="color:red"></span>
+                            </a></span>
+                        {% endif %}
+                    {%- endfor %}
+                </p>
             </div>
             <div class="col">
                 <h2><a href="{{url_two}}">{{title_two}}</a></h2>
