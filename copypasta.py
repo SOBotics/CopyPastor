@@ -20,6 +20,11 @@ def internal_server_error(error):
     return render_template('error.html', message="Umph! Something bad happened, we'll look into it. Thanks ..."), 500
 
 
+@app.route("/")
+def display_posts():
+    return render_template("main_page.html")
+
+
 @app.route("/posts/create", methods=['POST'])
 def store_post():
     try:
