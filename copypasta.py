@@ -123,12 +123,12 @@ def save_feedback(data):
         old_db = cur.fetchone()
         if old_db:
             if old_db[1] == data[1]:
-                ret_msg = "user feedback already registered"
+                ret_msg = "User feedback already registered"
                 feedback_id = old_db[0]
             else:
                 cur.execute("UPDATE feedback SET feedback_type=?, link=? WHERE post_id=? AND username=?;",
                             (data[1], data[3], data[0], data[2]))
-                ret_msg = "user feedback updated from {} to {}".format(old_db[1], data[1])
+                ret_msg = "User feedback updated from {} to {}".format(old_db[1], data[1])
                 feedback_id = old_db[0]
         else:
             try:
@@ -136,7 +136,7 @@ def save_feedback(data):
                 cur.execute("INSERT INTO feedback (post_id, feedback_type, username, link) VALUES (?,?,?,?);", data)
                 cur.execute("SELECT last_insert_rowid();")
                 feedback_id = cur.fetchone()[0]
-                ret_msg = "user feedback registered successfully"
+                ret_msg = "User feedback registered successfully"
             except sqlite3.IntegrityError as e:
                 print(e)
                 return "Post ID is incorrect. Post is either deleted or not yet created", None
