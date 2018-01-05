@@ -168,3 +168,13 @@ def retrieve_data(post_id):
                 zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one',
                      'body_two', 'feedback'), list(row) + [feedbacks])}
         return data
+
+
+def retrieve_post_id(url_one, url_two):
+    with app.app_context():
+        cur = get_db().cursor()
+        cur.execute("SELECT post_id FROM posts WHERE url_one=? AND url_two=?", (url_one, url_two))
+        row = cur.fetchone()
+        if row is None:
+            return None
+        return row[0]
