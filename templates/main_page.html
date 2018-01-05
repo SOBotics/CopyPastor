@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <p>
+        CopyPastor is a Flask application to serve as a web dashboard for the
+        <a href="https://stackapps.com/questions/7197/guttenberg-a-bot-searching-for-plagiarism-on-stack-overflow">
+            Guttenberg
+        </a>
+        bot which would help in the plagiarism flags.
+
+        <br>
+
+        Do report any
+        <a href="https://github.com/SOBotics/CopyPastor/issues/new"> issues or feature requests on Github.</a>
+        Pull requests are always welcome.
+        Join us in <a href="https://chat.stackoverflow.com/rooms/111347/sobotics"> chat, if you want to discuss.</a>
+
+        <br><br>
+
+        <i>Whatever you do, our cat will always be watching you.
+            <img src="{{ url_for('static', filename='favicon.png') }}" class="textcat">
+        </i>
+    </p>
+</div>
+{% endblock %}
+</html>
+
