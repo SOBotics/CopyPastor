@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <h2><a href="{{url_one}}">{{title_one}}</a></h2>
+                <h2><a href="{{url_one}}" target="_BLANK">{{title_one}}</a></h2>
                 <p>Plagiarized - Posted on {{date_one.strftime('%Y-%m-%d')}}
                     {% for type,name,link in feedback -%}
                         {% if type == "tp" %}
@@ -20,7 +20,7 @@
                 </p>
             </div>
             <div class="col">
-                <h2><a href="{{url_two}}">{{title_two}}</a></h2>
+                <h2><a href="{{url_two}}" target="_BLANK">{{title_two}}</a></h2>
                 <p>Original - Posted on {{date_two.strftime('%Y-%m-%d')}}</p>
             </div>
         </div>
