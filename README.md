@@ -25,20 +25,51 @@ To setup the app on your local machine:
 
 POST Parameters:
 
-    "url_one"   : The URL of the post which is (possibly) plagairized
-    "url_two"   : The URL of the original post
-    "title_one" : Title of the post which is (possibly) plagiarized
-    "title_two" : Title of the original post
-    "date_one"  : The date when the (possibly) plagiarized post was created
-    "date_two"  : The date when the original post was created
-    "body_one"  : The body markdown of the post which is (possibly) plagiarized
-    "body_two"  : The body markdown of the original post
+| Parameter | Description                                                   |
+| ----------| ------------------------------------------------------------- |
+|url_one    | The URL of the post which is (possibly) plagairized           |
+|url_two    | The URL of the original post                                  |
+|title_one  | Title of the post which is (possibly) plagiarized             |
+|title_two  | Title of the original post                                    |
+|date_one   | The date when the (possibly) plagiarized post was created     |
+|date_two   | The date when the original post was created                   |
+|body_one   | The body markdown of the post which is (possibly) plagiarized |
+|body_two   | The body markdown of the original post                        |
 
 ### Responses
 
 Success Response
 
      {"post_id":<postID>,"status":"success"}
+
+Failure Response (Error Code 400 Bad Request)
+
+     {"message":<error reason>,"status":"failure"}
+
+
+## POST  `/feedback/create`
+
+POST Parameters:
+
+| Parameter      | Description                                                         |
+| ---------------| --------------------------------------------------------------------|
+| post_id        | The CopyPastor Post ID for the post whose feedback is being provided|
+| feedback_type  | The type of feedback, can be "tp" or "fp"                           |
+| username       | Username of the user who provided the feedback                      |
+| link           | A link to the chat profile of the user who provided the feedback    |
+
+### Responses
+
+Success Response
+
+     {"feedback_id":<feedbackID>,"status":"success",message:<standard message>}
+
+| Type              | Message returned                     |
+|-------------------|--------------------------------------|
+| New Feedback      | User feedback registered successfully|
+| Updating Feedback | User feedback updated from -- to --  |
+| Same Feedback     | User feedback already registered     |
+
 
 Failure Response (Error Code 400 Bad Request)
 
