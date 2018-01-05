@@ -35,6 +35,8 @@ def store_post():
         data = (request.form["url_one"], request.form["url_two"], request.form["title_one"],
                 request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"])
         post_id = save_data(data)
+        if post_id == -1:
+            return jsonify({"status": "failure", "message": "Error - Post already present"}), 400
     except KeyError as e:
         return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
     return jsonify({"status": "success", "post_id": post_id})
@@ -110,6 +112,9 @@ def save_data(data):
     with app.app_context():
         db = get_db()
         cur = db.cursor()
+        cur.execute("SELECT  * FROM posts WHERE url_one=? AND url_two=?;", (data[0], data[1]))
+        if cur.fetchone():
+            return -1
         cur.execute("INSERT INTO posts "
                     "(url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two) "
                     "VALUES (?,?,?,?,?,?,?,?);", data)
@@ -161,5 +166,5 @@ def retrieve_data(post_id):
         feedbacks = cur.fetchall()
         data = {i: j for i, j in
                 zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one',
-                     'body_two', 'feedback'), list(row)+[feedbacks])}
+                     'body_two', 'feedback'), list(row) + [feedbacks])}
         return data
