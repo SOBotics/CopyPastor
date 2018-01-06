@@ -35,6 +35,9 @@ POST Parameters:
 |date_two   | The date when the original post was created                   |
 |body_one   | The body markdown of the post which is (possibly) plagiarized |
 |body_two   | The body markdown of the original post                        |
+|key        | The authentication key provided, to validate the request      |
+
+
 
 ### Responses
 
@@ -57,6 +60,7 @@ POST Parameters:
 | feedback_type  | The type of feedback, can be "tp" or "fp"                           |
 | username       | Username of the user who provided the feedback                      |
 | link           | A link to the chat profile of the user who provided the feedback    |
+| key            | The authentication key provided, to validate the request            |
 
 ### Responses
 
