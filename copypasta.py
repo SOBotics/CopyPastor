@@ -28,6 +28,9 @@ def display_posts():
 @app.route("/posts/create", methods=['POST'])
 def store_post():
     try:
+        auth = request.form["key"]
+        if not check_for_auth(auth):
+            return jsonify({"status": "failure", "message": "Error - Authentication Failure"}), 403
         date_one = request.form["date_one"]
         date_two = request.form["date_two"]
         if date_one < date_two:
@@ -45,6 +48,9 @@ def store_post():
 @app.route("/feedback/create", methods=['POST'])
 def store_feedback():
     try:
+        auth = request.form["key"]
+        if not check_for_auth(auth):
+            return jsonify({"status": "failure", "message": "Error - Authentication Failure"}), 403
         data = (request.form["post_id"], request.form["feedback_type"], request.form["username"], request.form["link"])
         if data[1] not in ("tp", "fp"):
             return jsonify({"status": "failure", "message": "Error - Unknown feedback type"}), 400
@@ -202,3 +208,13 @@ def retrieve_post_id(url_one, url_two):
         if row is None:
             return None
         return row[0]
+
+
+def check_for_auth(data):
+    with app.app_context():
+        cur = get_db().cursor()
+        cur.execute("SELECT associated_user FROM auth WHERE auth_string=?", (data,))
+        row = cur.fetchone()
+        if row is None:
+            return False
+        return True

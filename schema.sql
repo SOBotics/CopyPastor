@@ -18,3 +18,8 @@ CREATE TABLE IF NOT EXISTS feedback (
  link text NOT NULL,
  FOREIGN KEY(post_id) REFERENCES posts(post_id)
 );
+
+CREATE TABLE IF NOT EXISTS auth (
+ auth_string TEXT PRIMARY KEY,
+ associated_user TEXT
+)
