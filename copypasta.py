@@ -1,7 +1,7 @@
 import sqlite3
 from html import unescape
 
-from flask import Flask, render_template, request, jsonify, g
+from flask import Flask, render_template, request, jsonify, g, redirect, url_for
 from datetime import datetime
 
 app = Flask(__name__)
@@ -55,6 +55,30 @@ def store_feedback():
             return jsonify({"status": "failure", "message": "Error - " + ret_msg}), 400
     except KeyError as e:
         return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
+
+
+@app.route("/posts/find", methods=['GET'])
+def find_post_get():
+    try:
+        url_one, url_two = request.args["url_one"], request.args["url_two"]
+    except KeyError as e:
+        return render_template('error.html', message="Sorry, you're missing argument {} ...".format(e.args[0])), 400
+    post_id = retrieve_post_id(url_one, url_two)
+    if post_id is None:
+        return render_template('error.html', message="Sorry, that page doesn't exist ..."), 404
+    return redirect(url_for('get_post', post_id=post_id))
+
+
+@app.route("/posts/find", methods=['POST'])
+def find_post_post():
+    try:
+        url_one, url_two = request.form["url_one"], request.form["url_two"]
+    except KeyError as e:
+        return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
+    post_id = retrieve_post_id(url_one, url_two)
+    if post_id is None:
+        return jsonify({"status": "failure", "message": "Error - No such post found"}), 404
+    return jsonify({"status": "success", "url": url_for('get_post', post_id=post_id), "post_id": post_id})
 
 
 @app.route("/posts/<int:post_id>", methods=['GET'])
