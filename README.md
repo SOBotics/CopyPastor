@@ -76,6 +76,19 @@ Failure Response (Error Code 400 Bad Request)
      {"message":<error reason>,"status":"failure"}
 
 
+## POST or GET `/posts/find`
+
+POST call returns a JSON with the `post_id` of the report containing the two given answers.
+GET call redirects to that particular web view. 
+
+Parameters:
+
+| Parameter      | Description                                                         |
+| ---------------| --------------------------------------------------------------------|
+| url_one        | The URL of the post which is (possibly) plagairized                 |
+| url_two        | The URL of the original post                                        |
+
+
 ## GET `/posts/<post_id>`
 
 A web view of the two posts next to each other. Error code 410 for deleted reports and 404 for non available reports.
