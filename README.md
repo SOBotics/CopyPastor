@@ -1,6 +1,5 @@
 
 ![CatPics](https://raw.githubusercontent.com/SOBotics/CopyPastor/master/static/favicon.png)
-![SOBotics](https://avatars3.githubusercontent.com/u/21141173?s=200&v=4)
 
 # Copy Pastor
 
