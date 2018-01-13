@@ -28,7 +28,9 @@ def display_posts():
 
 @app.route("/github", methods=['POST'])
 def github_webhook():
-    data = json.loads(request.data)
+    reader = codecs.getreader("utf-8")
+    data = json.load(reader(request.data))
+    
     print(data)
     if "/develop" in data["ref"]:
         subprocess.call("./update-develop.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
