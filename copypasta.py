@@ -32,9 +32,9 @@ def github_webhook():
     data = request.json
     
     if "/develop" in data.get("ref"):
-        subprocess.call("./update-develop.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
+        subprocess.call("../update-develop.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
     if "/master" in data.get("ref"):
-        subprocess.call("./update.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
+        subprocess.call("../update.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
     
     return data.get("ref")
 
