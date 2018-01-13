@@ -30,7 +30,7 @@ def display_posts():
 def github_webhook():
     #data = json.load(request.data.decode('utf-8'))
     data = request.json
-    subprocess.call("../update-develop.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
+    subprocess.call("../update-develop.sh", stdout=open('../debug.txt', 'w'), stderr=subprocess.STDOUT)
     return 'aborted for testing'    
     if "/develop" in data.get("ref"):
         subprocess.call("../update-develop.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
