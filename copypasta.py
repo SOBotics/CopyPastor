@@ -1,6 +1,6 @@
 import sqlite3
 from html import unescape
-
+import subprocess, os, json
 from flask import Flask, render_template, request, jsonify, g, redirect, url_for
 from datetime import datetime
 
@@ -23,6 +23,14 @@ def internal_server_error(error):
 @app.route("/")
 def display_posts():
     return render_template("main_page.html")
+
+
+@app.route("/github", methods=['POST'])
+def github_webhook():
+    data = json.loads(request.data)
+    print(data)
+    if "autoupdate" in data["head_commit"]["message"]:
+        subprocess.call("./launch.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
 
 
 @app.route("/posts/create", methods=['POST'])
