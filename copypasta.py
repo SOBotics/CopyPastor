@@ -17,7 +17,8 @@ def page_not_found(error):
 @app.errorhandler(500)
 def internal_server_error(error):
     print(error)
-    return render_template('error.html', message="Umph! Something bad happened, we'll look into it. Thanks ... (testing webhooks)"), 500
+    return render_template('error.html',
+                           message="Umph! Something bad happened, we'll look into it. Thanks ..."), 500
 
 
 @app.route("/")
@@ -29,8 +30,10 @@ def display_posts():
 def github_webhook():
     data = json.loads(request.data)
     print(data)
-    if "autoupdate" in data["head_commit"]["message"]:
-        subprocess.call("./launch.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
+    if "/develop" in data["ref"]:
+        subprocess.call("./update-develop.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
+    if "/master" in data["ref"]:
+        subprocess.call("./update.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
 
 
 @app.route("/posts/create", methods=['POST'])
