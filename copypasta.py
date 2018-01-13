@@ -11,7 +11,7 @@ DATABASE = 'copypastorDB.db'
 @app.errorhandler(404)
 def page_not_found(error):
     print(error)
-    return render_template('error.html', message="Sorry, that page doesn't exist ...THIS IS A TEST FOR WEBHOOKS AND SHOULD BE REMOVED"), 404
+    return render_template('error.html', message="Sorry, that page doesn't exist ..."), 404
 
 
 @app.errorhandler(500)
