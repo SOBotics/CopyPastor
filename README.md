@@ -93,6 +93,12 @@ Parameters:
 | url_two        | The URL of the original post                                        |
 
 
+## GET `/posts/pending`
+
+Returns a list of pending posts which have no feedback. 
+
+    { "posts": [ 1, 2, 3], "status": "success"}
+
 ## GET `/posts/<post_id>`
 
 A web view of the two posts next to each other. Error code 410 for deleted reports and 404 for non available reports.
