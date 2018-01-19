@@ -93,6 +93,35 @@ Parameters:
 | url_two        | The URL of the original post                                        |
 
 
+## GET  `/posts/findTarget`
+
+Returns a list of target posts which have been detected as the original posts from which the 
+given answer has been plagiarized
+
+
+Parameters:
+
+| Parameter      | Description                                                         |
+| ---------------| --------------------------------------------------------------------|
+| url            | The URL of any answer whose target posts are needed                 |
+
+
+Success Response 
+
+    {
+    	"status": "success",
+    	"posts": [{
+    		"post_id": "cp post id of 1",
+    		"target_url": "url of the original post"
+    	}, {
+    		"post_id": "cp post id of 2",
+    		"target_url": "url of the original post"
+    	}, {
+    		"post_id": "cp post id of 3",
+    		"target_url": "url of the original post"
+    	}]
+    }
+
 ## GET `/posts/pending`
 
 Returns a list of pending posts which have no feedback. 
