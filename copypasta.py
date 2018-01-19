@@ -110,6 +110,17 @@ def get_pending():
     return jsonify({"status": "success", "posts": posts})
 
 
+@app.route("/posts/findTarget", methods=['GET'])
+def get_target():
+    try:
+        url_one = request.args["url"]
+    except KeyError as e:
+        return render_template('error.html', message="Sorry, you're missing argument {} ...".format(e.args[0])), 400
+    targets = retrieve_targets(url_one)
+    posts = [{"post_id": i, "target_url": j} for i, j in targets]
+    return jsonify({"status": "success", "posts": posts})
+
+
 def get_body(body):
     return unescape(body).split("\r\n")
 
@@ -234,3 +245,11 @@ def fetch_posts_without_feedback():
         if posts:
             return [i[0] for i in posts]
         return posts
+
+
+def retrieve_targets(url_one):
+    with app.app_context():
+        cur = get_db().cursor()
+        cur.execute("SELECT post_id, url_two FROM posts WHERE url_one=?", (url_one,))
+        targets = cur.fetchall()
+        return targets
