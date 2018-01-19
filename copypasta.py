@@ -17,8 +17,7 @@ def page_not_found(error):
 @app.errorhandler(500)
 def internal_server_error(error):
     print(error)
-    return render_template('error.html',
-                           message="Umph! Something bad happened, we'll look into it. Thanks ..."), 500
+    return render_template('error.html', message="Umph! Something bad happened, we'll look into it. Thanks ..."), 500
 
 
 @app.route("/")
@@ -31,12 +30,12 @@ def github_webhook():
     #data = json.load(request.data.decode('utf-8'))
     data = request.json
     subprocess.call("../update-develop.sh", stdout=open('../debug.txt', 'w'), stderr=subprocess.STDOUT)
-    return 'aborted for testing'    
+    return 'aborted for testing'
     if "/develop" in data.get("ref"):
         subprocess.call("../update-develop.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
     if "/master" in data.get("ref"):
         subprocess.call("../update.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
-    
+
     return data.get("ref")
 
 
@@ -117,6 +116,23 @@ def get_post(post_id):
     except KeyError as e:
         print(e)
         return render_template('error.html', message="Sorry, the post has been deleted ..."), 410
+
+
+@app.route("/posts/pending", methods=['GET'])
+def get_pending():
+    posts = fetch_posts_without_feedback()
+    return jsonify({"status": "success", "posts": posts})
+
+
+@app.route("/posts/findTarget", methods=['GET'])
+def get_target():
+    try:
+        url_one = request.args["url"]
+    except KeyError as e:
+        return render_template('error.html', message="Sorry, you're missing argument {} ...".format(e.args[0])), 400
+    targets = retrieve_targets(url_one)
+    posts = [{"post_id": i, "target_url": j} for i, j in targets]
+    return jsonify({"status": "success", "posts": posts})
 
 
 def get_body(body):
@@ -233,3 +249,21 @@ def check_for_auth(data):
         if row is None:
             return False
         return True
+
+
+def fetch_posts_without_feedback():
+    with app.app_context():
+        cur = get_db().cursor()
+        cur.execute("select post_id from posts where post_id not in (select post_id from feedback);")
+        posts = cur.fetchall()
+        if posts:
+            return [i[0] for i in posts]
+        return posts
+
+
+def retrieve_targets(url_one):
+    with app.app_context():
+        cur = get_db().cursor()
+        cur.execute("SELECT post_id, url_two FROM posts WHERE url_one=?", (url_one,))
+        targets = cur.fetchall()
+        return targets
