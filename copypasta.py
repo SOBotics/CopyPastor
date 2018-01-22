@@ -115,7 +115,7 @@ def get_target():
     try:
         url_one = request.args["url"]
     except KeyError as e:
-        return render_template('error.html', message="Sorry, you're missing argument {} ...".format(e.args[0])), 400
+        return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
     targets = retrieve_targets(url_one)
     posts = [{"post_id": i, "target_url": j} for i, j in targets]
     return jsonify({"status": "success", "posts": posts})
