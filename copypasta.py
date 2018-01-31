@@ -36,7 +36,9 @@ def store_post():
         if date_one < date_two:
             return jsonify({"status": "failure", "message": "Error - Plagiarized post created earlier"}), 400
         data = (request.form["url_one"], request.form["url_two"], request.form["title_one"],
-                request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"])
+                request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"], request.form["username_one"],
+                request.form["username_two"], request.form["userlink_one"],
+                request.form["userlink_two"])
         post_id = save_data(data)
         if post_id == -1:
             return jsonify({"status": "failure", "message": "Error - Post already present"}), 400
