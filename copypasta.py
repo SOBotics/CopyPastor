@@ -107,7 +107,8 @@ def get_post(post_id):
                                body_one=get_body(data["body_one"]), body_two=get_body(data["body_two"]),
                                username_one=data["username_one"], username_two=data["username_two"],
                                user_url_one=data["user_url_one"], user_url_two=data["user_url_two"],
-                               type="Reposted" if data["user_url_one"] == data["user_url_two"] else "Plagiarized",
+                               type="Reposted" if data["user_url_one"] != '' and
+                                                  data["user_url_one"] == data["user_url_two"] else "Plagiarized",
                                feedback=data["feedback"])
     except KeyError as e:
         print(e)
