@@ -177,8 +177,8 @@ def save_data(data):
         if cur.fetchone():
             return -1
         cur.execute("INSERT INTO posts "
-                    "(url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two) "
-                    "VALUES (?,?,?,?,?,?,?,?);", data)
+                    "(url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two, username_one, username_two, user_url_one, user_url_two) "
+                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?);", data)
         cur.execute("SELECT last_insert_rowid();")
         post_id = cur.fetchone()[0]
         db.commit()
