@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS posts (
  date_two INTEGER NOT NULL,
  username_one text NOT NULL,
  username_two text NOT NULL,
- userlink_one text NOT NULL,
- userlink_two text NOT NULL
+ user_url_one text NOT NULL,
+ user_url_two text NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS feedback (
