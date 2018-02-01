@@ -17,12 +17,16 @@
                             </a></span>
                         {% endif %}
                     {%- endfor %}
-                    <br>by <a href="{{user_url_one}}" target="_BLANK">{{username_one}}</a></p>
+                    {% if username_one != "" %}
+                        <br>by <a href="{{user_url_one}}" target="_BLANK">{{username_one}}</a></p>
+                    {% endif %}
             </div>
             <div class="col">
                 <h2><a href="{{url_two}}" target="_BLANK">{{title_two}}</a></h2>
                 <p>Original - Posted on {{date_two.strftime('%Y-%m-%d')}}
-                <br>by <a href="{{user_url_two}}" target="_BLANK">{{username_two}}</a></p>
+                {% if username_two != "" %}
+                    <br>by <a href="{{user_url_two}}" target="_BLANK">{{username_two}}</a></p>
+                {% endif %}
             </div>
         </div>
     </div>
