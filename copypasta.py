@@ -111,8 +111,17 @@ def get_post(post_id):
 
 @app.route("/posts/pending", methods=['GET'])
 def get_pending():
-    posts = fetch_posts_without_feedback()
-    return jsonify({"status": "success", "posts": posts})
+    type = request.args.get("reasons", False)
+    if type == "true":
+        posts = fetch_posts_without_feedback_with_details()
+        items = [
+            {i: j for i, j in zip(('post_id', 'url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two',
+                                   'username_one', 'username_two', 'user_url_one', 'user_url_two', 'feedback'), post)}
+            for post in posts]
+        return jsonify({"status": "success", "posts": items})
+    else:
+        posts = fetch_posts_without_feedback()
+        return jsonify({"status": "success", "posts": posts})
 
 
 @app.route("/posts/findTarget", methods=['GET'])
@@ -252,6 +261,15 @@ def fetch_posts_without_feedback():
         if posts:
             return [i[0] for i in posts]
         return posts
+
+
+def fetch_posts_without_feedback_with_details():
+    with app.app_context():
+        cur = get_db().cursor()
+        cur.execute("select post_id, url_one, url_two, title_one, title_two, date_one, date_two,"
+                    "username_one, username_two, user_url_one, user_url_two "
+                    "from posts where post_id not in (select post_id from feedback);")
+        return cur.fetchall()
 
 
 def retrieve_targets(url_one):
