@@ -36,9 +36,9 @@ def store_post():
         if date_one < date_two:
             return jsonify({"status": "failure", "message": "Error - Plagiarized post created earlier"}), 400
         data = (request.form["url_one"], request.form["url_two"], request.form["title_one"],
-                request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"], request.form["username_one"],
-                request.form["username_two"], request.form["userlink_one"],
-                request.form["userlink_two"])
+                request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"],
+                request.form["username_one"], request.form["username_two"], request.form["user_url_one"],
+                request.form["user_url_two"])
         post_id = save_data(data)
         if post_id == -1:
             return jsonify({"status": "failure", "message": "Error - Post already present"}), 400
@@ -100,6 +100,8 @@ def get_post(post_id):
                                date_one=datetime.fromtimestamp(float(data["date_one"])),
                                date_two=datetime.fromtimestamp(float(data["date_two"])),
                                body_one=get_body(data["body_one"]), body_two=get_body(data["body_two"]),
+                               username_one=data["username_one"], username_two=data["username_two"],
+                               user_url_one=data["user_url_one"], user_url_two=data["user_url_two"],
                                feedback=data["feedback"])
     except KeyError as e:
         print(e)
@@ -206,7 +208,8 @@ def save_feedback(data):
 def retrieve_data(post_id):
     with app.app_context():
         cur = get_db().cursor()
-        cur.execute("SELECT url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two FROM posts "
+        cur.execute("SELECT url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two, "
+                    "username_one, username_two, user_url_one, user_url_two FROM posts "
                     "WHERE post_id=?;", (post_id,))
         row = cur.fetchone()
         if row is None:
@@ -215,7 +218,8 @@ def retrieve_data(post_id):
         feedbacks = cur.fetchall()
         data = {i: j for i, j in
                 zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one',
-                     'body_two', 'feedback'), list(row) + [feedbacks])}
+                     'body_two', 'username_one', 'username_two', 'user_url_one', 'user_url_two','feedback'),
+                    list(row) + [feedbacks])}
         return data
 
 
