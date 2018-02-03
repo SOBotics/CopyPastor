@@ -39,7 +39,7 @@ def github_webhook():
             signature, calc_signature, request.data), file=sys.stderr)
         return jsonify({"status": "failure", "message": "Error - Authentication Failure"}), 403
     if "/develop" in data.get("ref"):
-        subprocess.call("../update-develop.sh", stdout=open('testoutput.txt', 'w'), stderr=subprocess.STDOUT)
+        subprocess.call("../update-develop.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
     if "/master" in data.get("ref"):
         subprocess.call("../update.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
 
