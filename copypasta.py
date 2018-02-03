@@ -29,7 +29,6 @@ def display_posts():
 @app.route("/github", methods=['POST'])
 def github_webhook():
     data = request.json
-    #subprocess.call("../update-develop.sh", stdout=open('../debug.txt', 'w'), stderr=subprocess.STDOUT)
     signature = request.headers.get("X-Hub-Signature", None)
     if not signature:
         return jsonify({"status": "failure", "message": "Error - Authentication Failure"}), 403
