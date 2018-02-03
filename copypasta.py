@@ -35,7 +35,8 @@ def github_webhook():
     calc_signature = "sha1"+str(hmac.new(str.encode(get_github_creds()), msg=request.data,
                                          digestmod='sha1').hexdigest())
     if not hmac.compare_digest(calc_signature, signature):
-        print("Request with an unknown signature", file=sys.stderr)
+        print("Request with an unknown signature - {}, expected signature - {}, payload - {} and "
+              "credentials - {}".format(signature, calc_signature, request.data, get_github_creds()), file=sys.stderr)
         return jsonify({"status": "failure", "message": "Error - Authentication Failure"}), 403
     if "/webhooks" in data.get("ref"):
         print("New commit on webhooks branch", file=sys.stderr)
