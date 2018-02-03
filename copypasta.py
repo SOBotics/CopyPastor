@@ -1,6 +1,6 @@
 import sqlite3
 from html import unescape
-import subprocess, os, json, sys
+import subprocess, os, sys
 from flask import Flask, render_template, request, jsonify, g, redirect, url_for
 from datetime import datetime
 import hmac
@@ -32,16 +32,12 @@ def github_webhook():
     signature = request.headers.get("X-Hub-Signature", None)
     if not signature:
         return jsonify({"status": "failure", "message": "Error - Authentication Failure"}), 403
-    calc_signature = "sha1="+str(hmac.new(str.encode(get_github_creds()), msg=request.data,
-                                         digestmod='sha1').hexdigest())
+    calc_signature = "sha1=" + str(hmac.new(str.encode(get_github_creds()), msg=request.data,
+                                            digestmod='sha1').hexdigest())
     if not hmac.compare_digest(calc_signature, signature):
-        print("Request with an unknown signature - {}, expected signature - {}, payload - {} and "
-              "credentials - {}".format(signature, calc_signature, request.data, get_github_creds()), file=sys.stderr)
-        return jsonify({"status": "failure", "message": "Error - Authentication Failure",
-                        "dump": "Request with an unknown signature - {}, expected signature - {}, payload - {} and "
-                        "credentials - {}".format(signature, calc_signature, request.data, get_github_creds())}), 403
-    if "/webhooks" in data.get("ref"):
-        print("New commit on webhooks branch", file=sys.stderr)
+        print("Request with an unknown signature - {}, expected signature - {}, payload - {}".format(
+            signature, calc_signature, request.data), file=sys.stderr)
+        return jsonify({"status": "failure", "message": "Error - Authentication Failure"}), 403
     if "/develop" in data.get("ref"):
         subprocess.call("../update-develop.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
     if "/master" in data.get("ref"):
@@ -60,15 +56,15 @@ def store_post():
         date_two = request.form["date_two"]
         if date_one < date_two:
             return jsonify({"status": "failure", "message": "Error - Plagiarized post created earlier"}), 400
-        
+
         if request.form.get('username_one', None) is not None:
             data = (request.form["url_one"], request.form["url_two"], request.form["title_one"],
-                request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"],
-                request.form["username_one"], request.form["username_two"], request.form["user_url_one"],
-                request.form["user_url_two"])
+                    request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"],
+                    request.form["username_one"], request.form["username_two"], request.form["user_url_one"],
+                    request.form["user_url_two"])
         else:
             data = (request.form["url_one"], request.form["url_two"], request.form["title_one"],
-                request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"])
+                    request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"])
         post_id = save_data(data)
         if post_id == -1:
             return jsonify({"status": "failure", "message": "Error - Post already present"}), 400
@@ -142,8 +138,8 @@ def get_post(post_id):
 
 @app.route("/posts/pending", methods=['GET'])
 def get_pending():
-    type = request.args.get("reasons", False)
-    if type == "true":
+    type_of_post = request.args.get("reasons", False)
+    if type_of_post == "true":
         posts = fetch_posts_without_feedback_with_details()
         items = [
             {i: j for i, j in zip(('post_id', 'url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two',
@@ -207,16 +203,18 @@ def save_data(data):
         cur.execute("SELECT  * FROM posts WHERE url_one=? AND url_two=?;", (data[0], data[1]))
         if cur.fetchone():
             return -1
-        
+
         if len(data) != 12:
             cur.execute("INSERT INTO posts "
-                    "(url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two, username_one, username_two, user_url_one, user_url_two) "
-                    "VALUES (?,?,?,?,?,?,?,?,'','','','');", data)
+                        "(url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two, "
+                        "username_one, username_two, user_url_one, user_url_two) "
+                        "VALUES (?,?,?,?,?,?,?,?,'','','','');", data)
         else:
             cur.execute("INSERT INTO posts "
-                        "(url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two, username_one, username_two, user_url_one, user_url_two) "
+                        "(url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two, "
+                        "username_one, username_two, user_url_one, user_url_two) "
                         "VALUES (?,?,?,?,?,?,?,?,?,?,?,?);", data)
-                        
+
         cur.execute("SELECT last_insert_rowid();")
         post_id = cur.fetchone()[0]
         db.commit()
