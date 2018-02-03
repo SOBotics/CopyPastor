@@ -7,13 +7,12 @@ CREATE TABLE IF NOT EXISTS posts (
  body_one text NOT NULL,
  body_two text NOT NULL,
  date_one INTEGER NOT NULL,
- date_two INTEGER NOT NULL
+ date_two INTEGER NOT NULL,
+ username_one text NOT NULL,
+ username_two text NOT NULL,
+ user_url_one text NOT NULL,
+ user_url_two text NOT NULL
 );
-
-ALTER TABLE posts ADD COLUMN username_one text NOT NULL DEFAULT "";
-ALTER TABLE posts ADD COLUMN username_two text NOT NULL DEFAULT "";
-ALTER TABLE posts ADD COLUMN user_url_one text NOT NULL DEFAULT "";
-ALTER TABLE posts ADD COLUMN user_url_two text NOT NULL DEFAULT "";
 
 
 CREATE TABLE IF NOT EXISTS feedback (
