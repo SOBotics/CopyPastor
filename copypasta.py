@@ -32,7 +32,7 @@ def github_webhook():
     signature = request.headers.get("X-Hub-Signature", None)
     if not signature:
         return jsonify({"status": "failure", "message": "Error - Authentication Failure"}), 403
-    calc_signature = "sha1"+str(hmac.new(str.encode(get_github_creds()), msg=request.data,
+    calc_signature = "sha1="+str(hmac.new(str.encode(get_github_creds()), msg=request.data,
                                          digestmod='sha1').hexdigest())
     if not hmac.compare_digest(calc_signature, signature):
         print("Request with an unknown signature - {}, expected signature - {}, payload - {} and "
