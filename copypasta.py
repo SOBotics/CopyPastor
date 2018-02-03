@@ -38,6 +38,8 @@ def github_webhook():
     if not hmac.compare_digest(calc_signature, signature):
         print("Request with an unknown signature", file=sys.stderr)
         return jsonify({"status": "failure", "message": "Error - Authentication Failure"}), 403
+    if "/webhooks" in data.get("ref"):
+        print("New commit on webhooks branch", file=sys.stderr)
     if "/develop" in data.get("ref"):
         subprocess.call("../update-develop.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
     if "/master" in data.get("ref"):
