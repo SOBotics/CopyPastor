@@ -124,7 +124,7 @@ Success Response
 
 ## GET `/posts/pending`
 
-Returns a list of pending posts which have no feedback. 
+Returns a list of pending posts which have no feedback. Parameter `reason` when set to `true`, returns more details about the pending posts.
 
     { "posts": [ 1, 2, 3], "status": "success"}
 

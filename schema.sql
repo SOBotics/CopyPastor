@@ -10,6 +10,12 @@ CREATE TABLE IF NOT EXISTS posts (
  date_two INTEGER NOT NULL
 );
 
+ALTER TABLE posts ADD COLUMN username_one text NOT NULL DEFAULT "";
+ALTER TABLE posts ADD COLUMN username_two text NOT NULL DEFAULT "";
+ALTER TABLE posts ADD COLUMN user_url_one text NOT NULL DEFAULT "";
+ALTER TABLE posts ADD COLUMN user_url_two text NOT NULL DEFAULT "";
+
+
 CREATE TABLE IF NOT EXISTS feedback (
  feedback_id INTEGER PRIMARY KEY,
  post_id INTEGER,
