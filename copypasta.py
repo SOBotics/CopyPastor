@@ -1,8 +1,9 @@
 import sqlite3
 from html import unescape
-import subprocess, os, json
+import subprocess, os, json, sys
 from flask import Flask, render_template, request, jsonify, g, redirect, url_for
 from datetime import datetime
+import hmac
 
 app = Flask(__name__)
 DATABASE = 'copypastorDB.db'
@@ -27,10 +28,16 @@ def display_posts():
 
 @app.route("/github", methods=['POST'])
 def github_webhook():
-    #data = json.load(request.data.decode('utf-8'))
     data = request.json
-    subprocess.call("../update-develop.sh", stdout=open('../debug.txt', 'w'), stderr=subprocess.STDOUT)
-    return 'aborted for testing'
+    #subprocess.call("../update-develop.sh", stdout=open('../debug.txt', 'w'), stderr=subprocess.STDOUT)
+    #return 'aborted for testing'
+    signature = request.headers.get("X-Hub-Signature", None)
+    if not signature:
+        return jsonify({"status": "failure", "message": "Error - Authentication Failure"}), 403
+    calc_signature = "sha1"+str(hmac.new(str(get_github_creds()), msg=request.data, digestmod='sha1').hexdigest())
+    if not hmac.compare_digest(calc_signature, signature):
+        print("Request with an unknown signature", file=sys.stderr)
+        return jsonify({"status": "failure", "message": "Error - Authentication Failure"}), 403
     if "/develop" in data.get("ref"):
         subprocess.call("../update-develop.sh", stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT)
     if "/master" in data.get("ref"):
@@ -278,6 +285,16 @@ def check_for_auth(data):
         if row is None:
             return False
         return True
+
+
+def get_github_creds():
+    with app.app_context():
+        cur = get_db().cursor()
+        cur.execute('SELECT auth_string FROM auth WHERE associated_user="GHKey";')
+        row = cur.fetchone()
+        if row is None:
+            return False
+        return row[0]
 
 
 def fetch_posts_without_feedback():
