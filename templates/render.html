@@ -4,7 +4,11 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <h2><a href="{{url_one}}" target="_BLANK">{{title_one}}</a></h2>
+                <p><h2 style="display:inline"><a href="{{url_one}}">{{title_one}}</a></h2>
+                    <a href="{{url_one}}" target="_blank" title="Open in a new tab">
+                        <span class="fa fa-external-link" style="color:grey"></span>
+                    </a>
+                </p>
                 <p>{{type}} on {{date_one.strftime('%Y-%m-%d')}}
                     {% for type,name,link in feedback -%}
                         {% if type == "tp" %}
@@ -18,14 +22,18 @@
                         {% endif %}
                     {%- endfor %}
                     {% if username_one != "" %}
-                        <br>by <a href="{{user_url_one}}" target="_BLANK">{{username_one}}</a></p>
+                        <br>by <a href="{{user_url_one}}">{{username_one}}</a></p>
                     {% endif %}
             </div>
             <div class="col">
-                <h2><a href="{{url_two}}" target="_BLANK">{{title_two}}</a></h2>
+                <p><h2 style="display:inline"><a href="{{url_two}}">{{title_two}}</a></h2>
+                    <a href="{{url_two}}" target="_blank" title="Open in a new tab">
+                        <span class="fa fa-external-link" style="color:grey"></span>
+                    </a>
+                </p>
                 <p>Original - Posted on {{date_two.strftime('%Y-%m-%d')}}
                 {% if username_two != "" %}
-                    <br>by <a href="{{user_url_two}}" target="_BLANK">{{username_two}}</a></p>
+                    <br>by <a href="{{user_url_two}}">{{username_two}}</a></p>
                 {% endif %}
             </div>
         </div>
