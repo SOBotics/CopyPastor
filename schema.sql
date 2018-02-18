@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS posts (
  user_url_two text NOT NULL
 );
 
-
 CREATE TABLE IF NOT EXISTS feedback (
  feedback_id INTEGER PRIMARY KEY,
  post_id INTEGER,
@@ -28,3 +27,18 @@ CREATE TABLE IF NOT EXISTS auth (
  auth_string TEXT PRIMARY KEY,
  associated_user TEXT
 )
+
+CREATE TABLE IF NOT EXISTS reasons (
+ reason_id INTEGER,
+ reason text NOT NULL,
+ PRIMARY KEY (reason_id, reason)
+);
+
+CREATE TABLE IF NOT EXISTS caught_for (
+ post_id INTEGER NOT NULL,
+ reason_id INTEGER NOT NULL,
+ score INTEGER NOT NULL,
+ PRIMARY KEY (post_id, reason_id),
+ FOREIGN KEY(post_id) REFERENCES posts(post_id),
+ FOREIGN KEY(reason_id) REFERENCES reasons(reason_id)
+);
