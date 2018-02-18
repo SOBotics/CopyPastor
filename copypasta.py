@@ -67,6 +67,9 @@ def store_post():
                     request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"],
                     request.form["score"])
         post_id = save_data(data)
+        reasons = request.form["reasons"].split(",")
+        for reason in reasons:
+            set_caught_for(post_id, retrieve_reason_id(reason))
         if post_id == -1:
             return jsonify({"status": "failure", "message": "Error - Post already present"}), 400
     except KeyError as e:
@@ -131,7 +134,7 @@ def get_post(post_id):
                                user_url_one=data["user_url_one"], user_url_two=data["user_url_two"],
                                type="Reposted" if data["user_url_one"] != '' and
                                                   data["user_url_one"] == data["user_url_two"] else "Plagiarized",
-                               feedback=data["feedback"])
+                               feedback=data["feedback"], score=data["score"], reasons=data["reasons"])
     except KeyError as e:
         print(e)
         return render_template('error.html', message="Sorry, the post has been deleted ..."), 410
