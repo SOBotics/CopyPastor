@@ -275,7 +275,7 @@ def retrieve_data(post_id):
                 zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one',
                      'body_two', 'username_one', 'username_two', 'user_url_one', 'user_url_two', 'score',
                      'feedback', 'reasons'),
-                    list(row) + [feedbacks] + [reasons])}
+                    list(row) + [feedbacks] + [[r[0] for r in reasons]])}
         return data
 
 
