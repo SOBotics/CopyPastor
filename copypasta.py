@@ -266,12 +266,16 @@ def retrieve_data(post_id):
         row = cur.fetchone()
         if row is None:
             return None
+        cur.execute("SELECT reason FROM reasons INNER JOIN caught_for ON reasons.reason_id = caught_for.reason_id "
+                    "WHERE post_id=?;", (post_id,))
+        reasons = cur.fetchall()
         cur.execute("SELECT feedback_type, username, link FROM feedback WHERE post_id=?;", (post_id,))
         feedbacks = cur.fetchall()
         data = {i: j for i, j in
                 zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one',
-                     'body_two', 'username_one', 'username_two', 'user_url_one', 'user_url_two', 'feedback'),
-                    list(row) + [feedbacks])}
+                     'body_two', 'username_one', 'username_two', 'user_url_one', 'user_url_two', 'score',
+                     'feedback', 'reasons'),
+                    list(row) + [feedbacks] + [reasons])}
         return data
 
 
@@ -339,7 +343,7 @@ def retrieve_reason_id(reason_text):
         cur.execute("SELECT reason_id FROM reasons WHERE reason=?;", (reason_text,))
         row = cur.fetchone()
         if row is None:
-            cur.execute("INSERT INTO reasons (reason_id) VALUES (?);", (reason_text,))
+            cur.execute("INSERT INTO reasons (reason) VALUES (?);", (reason_text,))
             cur.execute("SELECT last_insert_rowid();")
             reason_id = cur.fetchone()[0]
         else:
@@ -355,7 +359,9 @@ def set_caught_for(post_id, reason_id):
         try:
             cur.execute("PRAGMA foreign_keys = ON;")
             cur.execute("INSERT INTO caught_for (post_id, reason_id) VALUES (?,?);", (post_id, reason_id))
+            db.commit()
             return "Added reason successfully", False
         except sqlite3.IntegrityError as e:
             print(e)
             return "Post ID or Reason ID is incorrect", True
+
