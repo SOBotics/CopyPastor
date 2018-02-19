@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS auth (
 
 CREATE TABLE IF NOT EXISTS reasons (
  reason_id INTEGER PRIMARY KEY,
- reason text NOT NULL,
+ reason text NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS caught_for (
