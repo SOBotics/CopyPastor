@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS reasons (
 CREATE TABLE IF NOT EXISTS caught_for (
  post_id INTEGER NOT NULL,
  reason_id INTEGER NOT NULL,
+ score INTEGER NOT NULL,
  PRIMARY KEY (post_id, reason_id),
  FOREIGN KEY(post_id) REFERENCES posts(post_id),
  FOREIGN KEY(reason_id) REFERENCES reasons(reason_id)
