@@ -67,11 +67,11 @@ def store_post():
                     request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"],
                     request.form["score"])
         post_id = save_data(data)
-        reasons = request.form["reasons"].split(",")
+        reasons = [i.split(':') for i in request.form["reasons"].split(",")]
         for reason in reasons:
-            msg, status = set_caught_for(post_id, retrieve_reason_id(reason))
+            msg, status = set_caught_for(post_id, retrieve_reason_id(reason[0]), reason[1])
             if status:
-                return jsonify({"status": "failure", "message": "Error - "+msg}), 400
+                return jsonify({"status": "failure", "message": "Error - " + msg}), 400
         if post_id == -1:
             return jsonify({"status": "failure", "message": "Error - Post already present"}), 400
     except KeyError as e:
@@ -135,7 +135,7 @@ def get_post(post_id):
                                username_one=data["username_one"], username_two=data["username_two"],
                                user_url_one=data["user_url_one"], user_url_two=data["user_url_two"],
                                type="Reposted" if data["user_url_one"] != '' and
-                                                  data["user_url_one"] == data["user_url_two"] else "Plagiarized",
+                                                    data["user_url_one"] == data["user_url_two"] else "Plagiarized",
                                feedback=data["feedback"], score=data["score"], reasons=data["reasons"])
     except KeyError as e:
         print(e)
@@ -352,16 +352,16 @@ def retrieve_reason_id(reason_text):
         return reason_id
 
 
-def set_caught_for(post_id, reason_id):
+def set_caught_for(post_id, reason_id, score):
     with app.app_context():
         db = get_db()
         cur = db.cursor()
         try:
             cur.execute("PRAGMA foreign_keys = ON;")
-            cur.execute("INSERT INTO caught_for (post_id, reason_id) VALUES (?,?);", (post_id, reason_id))
+            cur.execute("INSERT INTO caught_for (post_id, reason_id, score) VALUES (?,?,?);",
+                        (post_id, reason_id, score))
             db.commit()
             return "Added reason successfully", False
         except sqlite3.IntegrityError as e:
             print(e)
             return "Post ID or Reason ID is incorrect", True
-
