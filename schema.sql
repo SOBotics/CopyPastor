@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS feedback (
 CREATE TABLE IF NOT EXISTS auth (
  auth_string TEXT PRIMARY KEY,
  associated_user TEXT
-)
+);
 
 CREATE TABLE IF NOT EXISTS reasons (
  reason_id INTEGER PRIMARY KEY,
