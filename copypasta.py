@@ -61,11 +61,17 @@ def store_post():
             data = (request.form["url_one"], request.form["url_two"], request.form["title_one"],
                     request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"],
                     request.form["username_one"], request.form["username_two"], request.form["user_url_one"],
-                    request.form["user_url_two"])
+                    request.form["user_url_two"], request.form["score"])
         else:
             data = (request.form["url_one"], request.form["url_two"], request.form["title_one"],
-                    request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"])
+                    request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"],
+                    request.form["score"])
         post_id = save_data(data)
+        reasons = [i.split(':') for i in request.form["reasons"].split(",")]
+        for reason in reasons:
+            msg, status = set_caught_for(post_id, retrieve_reason_id(reason[0]), reason[1])
+            if status:
+                return jsonify({"status": "failure", "message": "Error - " + msg}), 400
         if post_id == -1:
             return jsonify({"status": "failure", "message": "Error - Post already present"}), 400
     except KeyError as e:
@@ -129,8 +135,8 @@ def get_post(post_id):
                                username_one=data["username_one"], username_two=data["username_two"],
                                user_url_one=data["user_url_one"], user_url_two=data["user_url_two"],
                                type="Reposted" if data["user_url_one"] != '' and
-                                                  data["user_url_one"] == data["user_url_two"] else "Plagiarized",
-                               feedback=data["feedback"])
+                                                    data["user_url_one"] == data["user_url_two"] else "Plagiarized",
+                               feedback=data["feedback"], score=data["score"], reasons=data["reasons"])
     except KeyError as e:
         print(e)
         return render_template('error.html', message="Sorry, the post has been deleted ..."), 410
@@ -204,16 +210,16 @@ def save_data(data):
         if cur.fetchone():
             return -1
 
-        if len(data) != 12:
+        if len(data) != 13:
             cur.execute("INSERT INTO posts "
                         "(url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two, "
-                        "username_one, username_two, user_url_one, user_url_two) "
-                        "VALUES (?,?,?,?,?,?,?,?,'','','','');", data)
+                        "username_one, username_two, user_url_one, user_url_two, score) "
+                        "VALUES (?,?,?,?,?,?,?,?,'','','','',?);", data)
         else:
             cur.execute("INSERT INTO posts "
                         "(url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two, "
-                        "username_one, username_two, user_url_one, user_url_two) "
-                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?);", data)
+                        "username_one, username_two, user_url_one, user_url_two, score) "
+                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);", data)
 
         cur.execute("SELECT last_insert_rowid();")
         post_id = cur.fetchone()[0]
@@ -255,17 +261,21 @@ def retrieve_data(post_id):
     with app.app_context():
         cur = get_db().cursor()
         cur.execute("SELECT url_one, url_two, title_one, title_two, date_one, date_two, body_one, body_two, "
-                    "username_one, username_two, user_url_one, user_url_two FROM posts "
+                    "username_one, username_two, user_url_one, user_url_two, score FROM posts "
                     "WHERE post_id=?;", (post_id,))
         row = cur.fetchone()
         if row is None:
             return None
+        cur.execute("SELECT reason FROM reasons INNER JOIN caught_for ON reasons.reason_id = caught_for.reason_id "
+                    "WHERE post_id=?;", (post_id,))
+        reasons = cur.fetchall()
         cur.execute("SELECT feedback_type, username, link FROM feedback WHERE post_id=?;", (post_id,))
         feedbacks = cur.fetchall()
         data = {i: j for i, j in
                 zip(('url_one', 'url_two', 'title_one', 'title_two', 'date_one', 'date_two', 'body_one',
-                     'body_two', 'username_one', 'username_two', 'user_url_one', 'user_url_two', 'feedback'),
-                    list(row) + [feedbacks])}
+                     'body_two', 'username_one', 'username_two', 'user_url_one', 'user_url_two', 'score',
+                     'feedback', 'reasons'),
+                    list(row) + [feedbacks] + [[r[0] for r in reasons]])}
         return data
 
 
@@ -313,7 +323,7 @@ def fetch_posts_without_feedback_with_details():
     with app.app_context():
         cur = get_db().cursor()
         cur.execute("select post_id, url_one, url_two, title_one, title_two, date_one, date_two,"
-                    "username_one, username_two, user_url_one, user_url_two "
+                    "username_one, username_two, user_url_one, user_url_two, score "
                     "from posts where post_id not in (select post_id from feedback);")
         return cur.fetchall()
 
@@ -324,3 +334,34 @@ def retrieve_targets(url_one):
         cur.execute("SELECT post_id, url_two FROM posts WHERE url_one=?", (url_one,))
         targets = cur.fetchall()
         return targets
+
+
+def retrieve_reason_id(reason_text):
+    with app.app_context():
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("SELECT reason_id FROM reasons WHERE reason=?;", (reason_text,))
+        row = cur.fetchone()
+        if row is None:
+            cur.execute("INSERT INTO reasons (reason) VALUES (?);", (reason_text,))
+            cur.execute("SELECT last_insert_rowid();")
+            reason_id = cur.fetchone()[0]
+        else:
+            reason_id = row[0]
+        db.commit()
+        return reason_id
+
+
+def set_caught_for(post_id, reason_id, score):
+    with app.app_context():
+        db = get_db()
+        cur = db.cursor()
+        try:
+            cur.execute("PRAGMA foreign_keys = ON;")
+            cur.execute("INSERT INTO caught_for (post_id, reason_id, score) VALUES (?,?,?);",
+                        (post_id, reason_id, score))
+            db.commit()
+            return "Added reason successfully", False
+        except sqlite3.IntegrityError as e:
+            print(e)
+            return "Post ID or Reason ID is incorrect", True
