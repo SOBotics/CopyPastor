@@ -25,17 +25,23 @@ To setup the app on your local machine:
 
 POST Parameters:
 
-| Parameter | Description                                                   |
-| ----------| ------------------------------------------------------------- |
-|url_one    | The URL of the post which is (possibly) plagairized           |
-|url_two    | The URL of the original post                                  |
-|title_one  | Title of the post which is (possibly) plagiarized             |
-|title_two  | Title of the original post                                    |
-|date_one   | The date when the (possibly) plagiarized post was created     |
-|date_two   | The date when the original post was created                   |
-|body_one   | The body markdown of the post which is (possibly) plagiarized |
-|body_two   | The body markdown of the original post                        |
-|key        | The authentication key provided, to validate the request      |
+| Parameter   | Description                                                   |
+| ------------| ------------------------------------------------------------- |
+|url_one      | The URL of the post which is (possibly) plagiarized           |
+|url_two      | The URL of the original post                                  |
+|title_one    | Title of the post which is (possibly) plagiarized             |
+|title_two    | Title of the original post                                    |
+|date_one     | The date when the (possibly) plagiarized post was created     |
+|date_two     | The date when the original post was created                   |
+|body_one     | The body markdown of the post which is (possibly) plagiarized |
+|body_two     | The body markdown of the original post                        |
+|username_one | The name of the poster of the (possibly) plagiarized post     |
+|username_two | The name of the poster of the original post                   |
+|user_url_one | The link to the poster of the (possibly) plagiarized post     |
+|user_url_two | The link to the poster of the original post                   |
+|score        | The score of detection of a report                            |
+|reasons      | The reasons why the post was caught for                       |
+|key          | The authentication key provided, to validate the request      |
 
 
 

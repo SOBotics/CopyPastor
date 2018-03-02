@@ -2,6 +2,14 @@
 {% block content %}
 
     <div class="container">
+        <span>Score: {{score}}; Reported for: {{ reasons|join(', ') }}</span>
+        <span class="openall" onclick="o('{{url_one}}','{{url_two}}')">
+            Open both answers
+            <span class="fa fa-external-link" style="color:grey"></span>
+        </span>
+    </div>
+
+    <div class="container">
         <div class="row">
             <div class="col">
                 <p><h2 style="display:inline"><a href="{{url_one}}">{{title_one}}</a></h2>
@@ -10,7 +18,7 @@
                     </a>
                 </p>
                 <p>{{type}} on {{date_one.strftime('%Y-%m-%d')}}
-                    {% for type,name,link in feedback -%}
+                    {% for type,name,link in feedback %}
                         {% if type == "tp" %}
                             <span class="fb"><a href="{{link}}" title="{{name}}">
                                 <span class="fa fa-check" style="color:green"></span>
@@ -20,7 +28,7 @@
                                 <span class="fa fa-times" style="color:red"></span>
                             </a></span>
                         {% endif %}
-                    {%- endfor %}
+                    {% endfor %}
                     {% if username_one != "" %}
                         <br>by <a href="{{user_url_one}}">{{username_one}}</a></p>
                     {% endif %}
