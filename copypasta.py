@@ -12,13 +12,15 @@ DATABASE = 'copypastorDB.db'
 @app.errorhandler(404)
 def page_not_found(error):
     print(error)
-    return render_template('error.html', message="Sorry, that page doesn't exist ..."), 404
+    return render_template('error.html', message="Sorry, that page doesn't exist ...",
+                           image="https://http.cat/404"), 404
 
 
 @app.errorhandler(500)
 def internal_server_error(error):
     print(error)
-    return render_template('error.html', message="Umph! Something bad happened, we'll look into it. Thanks ..."), 500
+    return render_template('error.html', message="Umph! Something bad happened, we'll look into it. Thanks ...",
+                           image="https://http.cat/500"), 500
 
 
 @app.route("/")
@@ -102,10 +104,12 @@ def find_post_get():
     try:
         url_one, url_two = request.args["url_one"], request.args["url_two"]
     except KeyError as e:
-        return render_template('error.html', message="Sorry, you're missing argument {} ...".format(e.args[0])), 400
+        return render_template('error.html', message="Sorry, you're missing argument {} ...".format(e.args[0]),
+                               image="https://http.cat/400"), 400
     post_id = retrieve_post_id(url_one, url_two)
     if post_id is None:
-        return render_template('error.html', message="Sorry, that page doesn't exist ..."), 404
+        return render_template('error.html', message="Sorry, that page doesn't exist ...",
+                               image="https://http.cat/404"), 404
     return redirect(url_for('get_post', post_id=post_id))
 
 
@@ -125,7 +129,8 @@ def find_post_post():
 def get_post(post_id):
     data = retrieve_data(post_id)
     if data is None:
-        return render_template('error.html', message="Sorry, that page doesn't exist ..."), 404
+        return render_template('error.html', message="Sorry, that page doesn't exist ...",
+                               image="https://http.cat/404"), 404
     try:
         return render_template('render.html', url_one=data["url_one"], url_two=data["url_two"],
                                title_one=unescape(data["title_one"]), title_two=unescape(data["title_two"]),
@@ -139,7 +144,8 @@ def get_post(post_id):
                                feedback=data["feedback"], score=data["score"], reasons=data["reasons"])
     except KeyError as e:
         print(e)
-        return render_template('error.html', message="Sorry, the post has been deleted ..."), 410
+        return render_template('error.html', message="Sorry, the post has been deleted ...",
+                               image="https://http.cat/410"), 410
 
 
 @app.route("/posts/pending", methods=['GET'])
