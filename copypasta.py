@@ -70,6 +70,8 @@ def store_post():
                     request.form["score"])
         post_id = save_data(data)
         reasons = [i.split(':') for i in request.form["reasons"].split(",")]
+        if any(len(i) != 2 for i in reasons):
+            return jsonify({"status": "failure", "message": "Error - Bad data {}".format(request.form["reasons"])}), 422
         for reason in reasons:
             msg, status = set_caught_for(post_id, retrieve_reason_id(reason[0]), reason[1])
             if status:
@@ -140,7 +142,7 @@ def get_post(post_id):
                                username_one=data["username_one"], username_two=data["username_two"],
                                user_url_one=data["user_url_one"], user_url_two=data["user_url_two"],
                                type="Reposted" if data["user_url_one"] != '' and
-                                                    data["user_url_one"] == data["user_url_two"] else "Plagiarized",
+                                                  data["user_url_one"] == data["user_url_two"] else "Plagiarized",
                                feedback=data["feedback"], score=data["score"], reasons=data["reasons"])
     except KeyError as e:
         print(e)
