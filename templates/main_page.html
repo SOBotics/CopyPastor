@@ -20,6 +20,13 @@
         <i>Whatever you do, our cat will always be watching you.
             <img src="{{ url_for('static', filename='favicon.png') }}" class="textcat">
         </i>
+
+        <br>
+
+        <div class="stats">
+            {% for type,color,count in data %}<div class="bar" style="background-color:{{color}};width:{{type}}%" title="{{count}}"></div>{% endfor %}
+        </div>
+
     </p>
 </div>
 {% endblock %}

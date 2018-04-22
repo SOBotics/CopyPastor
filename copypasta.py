@@ -25,7 +25,9 @@ def internal_server_error(error):
 
 @app.route("/")
 def display_posts():
-    return render_template("main_page.html")
+    counts = [len(i) for i in get_feedback_counts()]
+    data = [i*100.0/sum(counts) for i in counts]
+    return render_template("main_page.html", data=zip(data, ["#8eef83", "#ef8282", "#82deef", "#010101"], counts))
 
 
 @app.route("/github", methods=['POST'])
@@ -174,6 +176,13 @@ def get_target():
     targets = retrieve_targets(url_one)
     posts = [{"post_id": i, "target_url": j} for i, j in targets]
     return jsonify({"status": "success", "posts": posts})
+
+
+@app.route("/feedback/stats")
+def get_feedback_stats():
+    tp_feedback, fp_feedback, conf_feedback, none_feedback = get_feedback_counts()
+    return jsonify({"status": "success", "none": none_feedback, "tp": tp_feedback, "fp": fp_feedback,
+                    "conf": conf_feedback})
 
 
 def get_body(body):
@@ -373,3 +382,18 @@ def set_caught_for(post_id, reason_id, score):
         except sqlite3.IntegrityError as e:
             print(e)
             return "Post ID or Reason ID is incorrect", True
+
+
+def get_feedback_counts():
+    with app.app_context():
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("SELECT DISTINCT feedback_type, post_id FROM feedback;")
+        posts_with_feedback = cur.fetchall()
+        cur.execute("SELECT DISTINCT post_id FROM posts;")
+        all_posts = [i[0] for i in cur.fetchall()]
+        none_feedback = [i for i in all_posts if i not in [j for _, j in posts_with_feedback]]
+        tp_feedback = [j for i, j in posts_with_feedback if i == "tp" and ("fp", j) not in posts_with_feedback]
+        fp_feedback = [j for i, j in posts_with_feedback if i == "fp" and ("tp", j) not in posts_with_feedback]
+        conf_feedback = list(set(j for _, j in posts_with_feedback if j not in tp_feedback + fp_feedback))
+        return tp_feedback, fp_feedback, conf_feedback, none_feedback
