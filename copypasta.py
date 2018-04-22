@@ -68,10 +68,10 @@ def store_post():
             data = (request.form["url_one"], request.form["url_two"], request.form["title_one"],
                     request.form["title_two"], date_one, date_two, request.form["body_one"], request.form["body_two"],
                     request.form["score"])
-        post_id = save_data(data)
         reasons = [i.split(':') for i in request.form["reasons"].split(",")]
         if any(len(i) != 2 for i in reasons):
             return jsonify({"status": "failure", "message": "Error - Bad data {}".format(request.form["reasons"])}), 422
+        post_id = save_data(data)
         for reason in reasons:
             msg, status = set_caught_for(post_id, retrieve_reason_id(reason[0]), reason[1])
             if status:
