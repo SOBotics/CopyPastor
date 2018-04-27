@@ -27,6 +27,42 @@
             {% for type,color,count in data %}<div class="bar" style="background-color:{{color}};width:{{type}}%" title="{{count}}"></div>{% endfor %}
         </div>
 
+        <br>
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Report</th>
+                <th>Plagiarized Post</th>
+                <th>Original Post</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for post_id, title_one, title_two, url_one, url_two in posts %}
+                <tr>
+                    <td>
+                        <a href="http://copypastor.sobotics.org/posts/{{post_id}}">{{post_id}}</a>
+                        <a href="http://copypastor.sobotics.org/posts/{{post_id}}" target="_blank"
+                           title="Open in a new tab">
+                            <span class="fa fa-external-link" style="color:grey; height:50%"></span>
+                        </a></td>
+                    <td>
+                        <a href="{{url_one}}">{{title_one}}</a>
+                        <a href="{{url_one}}" target="_blank" title="Open in a new tab">
+                            <span class="fa fa-external-link" style="color:grey"></span>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{url_two}}">{{title_two}}</a>
+                        <a href="{{url_two}}" target="_blank" title="Open in a new tab">
+                            <span class="fa fa-external-link" style="color:grey"></span>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
     </p>
 </div>
 {% endblock %}
