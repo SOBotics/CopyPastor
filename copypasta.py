@@ -27,7 +27,8 @@ def internal_server_error(error):
 def display_posts():
     counts = [len(i) for i in get_feedback_counts()]
     data = [i*100.0/sum(counts) for i in counts]
-    return render_template("main_page.html", data=zip(data, ["#8eef83", "#ef8282", "#82deef", "#010101"], counts))
+    return render_template("main_page.html", data=zip(data, ["#8eef83", "#ef8282", "#82deef", "#010101"], counts),
+                           posts=get_latest_10_posts())
 
 
 @app.route("/github", methods=['POST'])
