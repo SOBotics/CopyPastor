@@ -397,3 +397,11 @@ def get_feedback_counts():
         fp_feedback = [j for i, j in posts_with_feedback if i == "fp" and ("tp", j) not in posts_with_feedback]
         conf_feedback = list(set(j for _, j in posts_with_feedback if j not in tp_feedback + fp_feedback))
         return tp_feedback, fp_feedback, conf_feedback, none_feedback
+
+
+def get_latest_10_posts():
+    with app.app_context():
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("SELECT post_id, title_one, title_two, url_one, url_two FROM posts ORDER BY post_id DESC LIMIT 10;")
+        return cur.fetchall()
