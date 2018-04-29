@@ -27,7 +27,8 @@ def internal_server_error(error):
 def display_posts():
     counts = [len(i) for i in get_feedback_counts()]
     data = [i*100.0/sum(counts) for i in counts]
-    return render_template("main_page.html", data=zip(data, ["#8eef83", "#ef8282", "#82deef", "#010101"], counts))
+    return render_template("main_page.html", data=zip(data, ["#8eef83", "#ef8282", "#82deef", "#010101"], counts),
+                           posts=get_latest_10_posts())
 
 
 @app.route("/github", methods=['POST'])
@@ -397,3 +398,11 @@ def get_feedback_counts():
         fp_feedback = [j for i, j in posts_with_feedback if i == "fp" and ("tp", j) not in posts_with_feedback]
         conf_feedback = list(set(j for _, j in posts_with_feedback if j not in tp_feedback + fp_feedback))
         return tp_feedback, fp_feedback, conf_feedback, none_feedback
+
+
+def get_latest_10_posts():
+    with app.app_context():
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("SELECT post_id, title_one, title_two, url_one, url_two FROM posts ORDER BY post_id DESC LIMIT 10;")
+        return cur.fetchall()
