@@ -1,9 +1,11 @@
-import sqlite3
-from html import unescape
-import subprocess, os, sys
-from flask import Flask, render_template, request, jsonify, g, redirect, url_for
-from datetime import datetime
 import hmac
+import os
+import sqlite3
+import subprocess
+import sys
+from datetime import datetime
+from flask import Flask, render_template, request, jsonify, g, redirect, url_for
+from html import unescape
 
 app = Flask(__name__)
 DATABASE = 'copypastorDB.db'
@@ -26,7 +28,7 @@ def internal_server_error(error):
 @app.route("/")
 def display_posts():
     counts = [len(i) for i in get_feedback_counts()]
-    data = [i*100.0/sum(counts) for i in counts]
+    data = [i * 100.0 / sum(counts) for i in counts]
     return render_template("main_page.html", data=zip(data, ["#8eef83", "#ef8282", "#82deef", "#010101"], counts),
                            posts=get_latest_10_posts())
 
@@ -142,6 +144,7 @@ def get_post(post_id):
                                date_one=datetime.fromtimestamp(float(data["date_one"])),
                                date_two=datetime.fromtimestamp(float(data["date_two"])),
                                body_one=get_body(data["body_one"]), body_two=get_body(data["body_two"]),
+                               f_body_one=unescape(data["body_one"]), f_body_two=unescape(data["body_two"]),
                                username_one=data["username_one"], username_two=data["username_two"],
                                user_url_one=data["user_url_one"], user_url_two=data["user_url_two"],
                                type="Reposted" if data["user_url_one"] != '' and
