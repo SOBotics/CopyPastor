@@ -9,3 +9,5 @@
 .display-switcher{float:right;padding-right:10px}
 .bar{height:20px;display:inline-block}
 .stats{border-radius:3px}
+.sd{white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word;}
+.sd>span{font-size:13px}

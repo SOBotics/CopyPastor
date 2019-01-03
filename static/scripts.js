@@ -1,9 +1,13 @@
 function disp(one, other)
 {
+
+one.replace("<//script>", "</script>")
+other.replace("<//script>", "</script>")
+
 var color = '',
     span = null;
 
-var diff = JsDiff.diffChars(one, other),
+var diff = JsDiff.diffWords(one, other),
     display = document.getElementById('display'),
     fragment = document.createDocumentFragment();
 
