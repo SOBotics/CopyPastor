@@ -7,8 +7,9 @@
 .textcat{height: 1.5em;}
 .headimg{float:right;width:7%; max-width:100px;}
 .openall{float:right;color:#007bff;cursor:pointer;font-weight:bold;}
-.display-switcher{float:right;padding-right:10px}
+.display-switcher{float:right;padding-right:10px;cursor:pointer;}
 .bar{height:20px;display:inline-block}
 .stats{border-radius:3px}
 .sd{white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word;}
 .sd>span{font-size:13px}
+.deprecated{color:#b8bbc1;}
