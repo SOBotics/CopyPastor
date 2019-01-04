@@ -7,6 +7,10 @@
             Open both answers
             <span class="fa fa-external-link" style="color:grey"></span>
         </span>
+        <span class="display-switcher">
+            <span onclick="$('#double').show();$('#single').hide();"><i class="fas fa-columns"></i></span>
+            <span onclick="$('#single').show();$('#double').hide();"><i class="fas fa-align-justify"></i></span>
+        </span>
     </div>
 
     <div class="container">
@@ -47,7 +51,7 @@
         </div>
     </div>
     <br>
-    <div class="container">
+    <div class="container" id="double">
         <div class="row">
             <div class="col">
                 <div class="cd">
@@ -75,6 +79,14 @@
                     {%- endfor %}
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="container" id="single" style="display:hidden">
+        <pre class="cd sd" id="display"></pre>
+        <div class="legend" title="Legend">
+            <span style="color:red">Present in both answers;</span>
+            <span style="color:green">Present only in the new answer;</span>
+            <span style="color:black">Present only in the old answer;</span>
         </div>
     </div>
 <div class="container">
