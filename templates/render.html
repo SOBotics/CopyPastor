@@ -8,8 +8,15 @@
             <span class="fa fa-external-link" style="color:grey"></span>
         </span>
         <span class="display-switcher">
-            <span onclick="$('#double').show();$('#single').hide();"><i class="fas fa-columns"></i></span>
-            <span onclick="$('#single').show();$('#double').hide();"><i class="fas fa-align-justify"></i></span>
+            <span onclick="$('#single').show();$('#double').hide();$('#old').hide();" title="Inline View">
+                <i class="fas fa-align-justify"></i>
+            </span>
+            <span onclick="$('#double').show();$('#single').hide();$('#old').hide();" title="Side By Side View">
+                <i class="fas fa-columns"></i>
+            </span>
+            <span onclick="$('#old').show();$('#single').hide();$('#double').hide();" title="Side By Side Old View (Line matching)">
+                <i class="fas fa-columns deprecated"></i>
+            </span>
         </span>
     </div>
 
@@ -52,6 +59,22 @@
     </div>
     <br>
     <div class="container" id="double">
+        <div class="row">
+            <div class="col">
+                <pre class="cd sd" id="left"></pre>
+            </div>
+            <div class="col">
+                <pre class="cd sd" id="right"></pre>
+            </div>
+        </div>
+        <div class="legend" title="Legend">
+            <span style="color:red">Present in both answers;</span>
+            <span style="color:green">Present only in the new answer;</span>
+            <span style="color:black">Present only in the old answer;</span>
+        </div>
+    </div>
+    <br>
+    <div class="container" id="old">
         <div class="row">
             <div class="col">
                 <div class="cd">
