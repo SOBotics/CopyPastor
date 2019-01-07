@@ -3,8 +3,8 @@
 function disp(one, other)
 {
 
-one.replace("<//script>", "</script>")
-other.replace("<//script>", "</script>")
+one=one.replace("<//script>", "</script>").replace("$//{", "${")
+other=other.replace("<//script>", "</script>").replace("$//{", "${")
 
 var color = '',
     span = null;
@@ -31,8 +31,8 @@ display.appendChild(fragment);
 function disp_sbs(one, other)
 {
 
-one.replace("<//script>", "</script>")
-other.replace("<//script>", "</script>")
+one=one.replace("<//script>", "</script>").replace("$/{", "${")
+other=other.replace("<//script>", "</script>").replace("$/{", "${")
 
 var color = '',
     span = null;

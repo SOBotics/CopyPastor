@@ -144,8 +144,8 @@ def get_post(post_id):
                                date_one=datetime.fromtimestamp(float(data["date_one"])),
                                date_two=datetime.fromtimestamp(float(data["date_two"])),
                                body_one=get_body(data["body_one"]), body_two=get_body(data["body_two"]),
-                               f_body_one=unescape(data["body_one"]).replace("`", "\\`").replace("</script>", "<//script>"),
-                               f_body_two=unescape(data["body_two"]).replace("`", "\\`").replace("</script>", "<//script>"),
+                               f_body_one=get_escaped_body(data["body_one"]),
+                               f_body_two=get_escaped_body(data["body_two"]),
                                username_one=data["username_one"], username_two=data["username_two"],
                                user_url_one=data["user_url_one"], user_url_two=data["user_url_two"],
                                type="Reposted" if data["user_url_one"] != '' and
@@ -188,6 +188,10 @@ def get_feedback_stats():
     tp_feedback, fp_feedback, conf_feedback, none_feedback = get_feedback_counts()
     return jsonify({"status": "success", "none": none_feedback, "tp": tp_feedback, "fp": fp_feedback,
                     "conf": conf_feedback})
+
+
+def get_escaped_body(body):
+    return unescape(body).replace("`", "\\`").replace("</script>", "<//script>").replace("${", "$\\{")
 
 
 def get_body(body):
