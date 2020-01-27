@@ -7,7 +7,7 @@ CopyPastor is a very small [Flask App](https://en.wikipedia.org/wiki/Flask_(web_
 
 The final plan for this project is to demarcate the portions that may have been plagiarized clearly, and to compare them with the post that it may have been taken from.
 
-CopyPastor records the the score of the reported posts, and the reasons that it was caught by.
+CopyPastor records the score of the reported posts, and the reasons that it was caught by.
 
 > Score: 0.7580878138542175; Reported for: String similarity
 
