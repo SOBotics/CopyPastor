@@ -12,7 +12,7 @@
   border-radius: 3px;
   font-family: monospace;
   text-align: center;
-  text-size: 10px
+  font-size: 15px
 }
 
 .sp {
@@ -76,7 +76,7 @@
   word-wrap: break-word;
 }
 
-.sd>span {
+.sd > span {
   font-size: 13px
 }
 
