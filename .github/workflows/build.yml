@@ -1,10 +1,6 @@
 name: build
 
-on:
-  push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+on: [push]
 
 jobs:
   build:
@@ -12,6 +8,8 @@ jobs:
     strategy:
       fail-fast: false
 
+    steps:
+    - uses: actions/checkout@v2
     - uses: actions/setup-python@v1
       with:
         python-version: 3.6
@@ -23,10 +21,10 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
-    - name: Configure application
-      run: sh setup.sh
     - name: Install dependencies
       run: pip3 install -r requirements.txt
+    - name: Configure application
+      run: sh setup.sh
     - name: Lint copypasta.py
       run: flake8 --config=tox.ini copypasta.py
     - name: Run tests
