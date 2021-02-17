@@ -3,6 +3,7 @@ import os
 import sqlite3
 import subprocess
 import sys
+import validators
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify, g, redirect, url_for
 from html import unescape
@@ -175,11 +176,16 @@ def get_pending():
 @app.route("/posts/findTarget", methods=['GET'])
 def get_target():
     try:
-        url_one = request.args["url"]
+        urls = request.args["url"]
     except KeyError as e:
         return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
-    targets = retrieve_targets(url_one)
-    posts = [{"post_id": i, "target_url": j} for i, j in targets]
+    urlsSplit = urls.split(',')
+    # Check if URLs are actually valid before searching for posts
+    if not all(validators.url("https:" + url) for url in urlsSplit):
+        return jsonify({"status": "failure", "message": "One or more URLs are invalid"}), 400
+    targets = retrieve_targets(urlsSplit)
+    posts = [ { "post_id": post_id, "original_url": original, "target_url": target, "repost": user1 == user2 }
+              for post_id, original, target, user1, user2 in targets ]
     return jsonify({"status": "success", "posts": posts})
 
 
@@ -354,10 +360,12 @@ def fetch_posts_without_feedback_with_details():
         return cur.fetchall()
 
 
-def retrieve_targets(url_one):
+def retrieve_targets(urlsSplit):
     with app.app_context():
+        question_marks = ",".join(map(lambda _: "?", urlsSplit))
         cur = get_db().cursor()
-        cur.execute("SELECT post_id, url_two FROM posts WHERE url_one=?", (url_one,))
+        cur.execute("SELECT post_id, url_one, url_two, user_url_one, user_url_two FROM posts "
+                    "WHERE url_one IN (" + question_marks + ")", (*urlsSplit,))
         targets = cur.fetchall()
         return targets
 
