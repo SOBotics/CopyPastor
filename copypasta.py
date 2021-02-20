@@ -179,12 +179,15 @@ def get_target():
         urls = request.args["url"]
     except KeyError as e:
         return jsonify({"status": "failure", "message": "Error - Missing argument {}".format(e.args[0])}), 400
-    urlsSplit = urls.split(',')
+    urls_split = urls.split(',')
     # Check if URLs are actually valid before searching for posts
-    if not all(validators.url("https:" + url) for url in urlsSplit):
+    if not all(validators.url("https:" + url) for url in urls_split):
         return jsonify({"status": "failure", "message": "One or more URLs are invalid"}), 400
-    targets = retrieve_targets(urlsSplit)
-    posts = [ { "post_id": post_id, "original_url": original, "target_url": target, "repost": user1 == user2 }
+    targets = retrieve_targets(urls_split)
+    post_ids = [item[0] for item in targets]
+    feedbacks = get_feedbacks_for_posts(post_ids)
+    posts = [{ "post_id": post_id, "original_url": original, "target_url": target, "repost": user1 == user2,
+               "feedbacks": [[feedback, link] for id_post, feedback, link in feedbacks if id_post == post_id]}
               for post_id, original, target, user1, user2 in targets ]
     return jsonify({"status": "success", "posts": posts})
 
@@ -360,12 +363,21 @@ def fetch_posts_without_feedback_with_details():
         return cur.fetchall()
 
 
-def retrieve_targets(urlsSplit):
+def retrieve_targets(urls_split):
     with app.app_context():
-        question_marks = ",".join(map(lambda _: "?", urlsSplit))
+        question_marks = ",".join(["?" for _ in urls_split])
         cur = get_db().cursor()
-        cur.execute("SELECT post_id, url_one, url_two, user_url_one, user_url_two FROM posts "
-                    "WHERE url_one IN (" + question_marks + ")", (*urlsSplit,))
+        cur.execute("SELECT posts.post_id, url_one, url_two, user_url_one, user_url_two FROM posts "
+                    "WHERE url_one IN (" + question_marks + ")", (*urls_split,))
+        targets = cur.fetchall()
+        return targets
+
+def get_feedbacks_for_posts(post_ids):
+    with app.app_context():
+        question_marks = ",".join(["?" for _ in post_ids])
+        cur = get_db().cursor()
+        cur.execute("SELECT post_id, feedback_type, link FROM feedback "
+                    "WHERE post_id IN (" + question_marks + ")", (*post_ids,))
         targets = cur.fetchall()
         return targets
 
